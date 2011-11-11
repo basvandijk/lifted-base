@@ -2,7 +2,7 @@
 
 -------------------------------------------------------------------------------
 -- |
--- Module      :  System.Timeout.Control
+-- Module      :  System.Timeout.Lifted
 -- Copyright   :  (c) The University of Glasgow 2007
 -- License     :  BSD-style (see the file libraries/base/LICENSE)
 --
@@ -11,11 +11,11 @@
 -- Portability :  non-portable
 --
 -- Attach a timeout event to monadic computations
--- which are instances of 'MonadControlIO'.
+-- which are instances of 'MonadBaseControl'.
 --
 -------------------------------------------------------------------------------
 
-module System.Timeout.Control ( timeout ) where
+module System.Timeout.Lifted ( timeout ) where
 
 -- from base:
 import           Data.Int            ( Int )
@@ -27,7 +27,7 @@ import qualified System.Timeout as T ( timeout )
 -- from base-unicode-symbols:
 import Data.Function.Unicode ( (∘) )
 
--- from monad-control (this package):
+-- from monad-control:
 import Control.Monad.Trans.Control ( MonadBaseControl, restore, liftBaseControl )
 
 -- | Generalized version of 'T.timeout'.

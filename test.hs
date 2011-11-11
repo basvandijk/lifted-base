@@ -18,9 +18,11 @@ import Control.Monad.Trans.Error
 import Control.Monad.Trans.State
 import qualified Control.Monad.Trans.RWS as RWS
 
--- from monad-control (this package):
-import Control.Exception.Control
+-- from monad-control:
 import Control.Monad.Trans.Control (MonadBaseControl)
+
+-- from lifted-base (this package):
+import Control.Exception.Lifted
 
 -- from test-framework:
 import Test.Framework (defaultMain, testGroup, Test)

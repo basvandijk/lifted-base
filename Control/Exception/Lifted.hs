@@ -10,7 +10,7 @@
 #endif
 
 {- |
-Module      :  Control.Exception.Control
+Module      :  Control.Exception.Lifted
 Copyright   :  Bas van Dijk, Anders Kaseorg
 License     :  BSD-style
 
@@ -19,10 +19,10 @@ Stability   :  experimental
 Portability :  non-portable (extended exceptions)
 
 This is a wrapped version of @Control.Exception@ with types generalized
-from @IO@ to all monads in 'MonadControlIO'.
+from @IO@ to all monads in either 'MonadBase' or 'MonadBaseControl'.
 -}
 
-module Control.Exception.Control
+module Control.Exception.Lifted
     ( module Control.Exception
 
       -- * Throwing exceptions
@@ -114,7 +114,7 @@ import Data.Function.Unicode ( (∘) )
 -- from transformers-base:
 import Control.Monad.Base ( MonadBase, liftBase )
 
--- from monad-control (this package):
+-- from monad-control:
 import Control.Monad.Trans.Control ( MonadBaseControl, StM
                                    , liftBaseControl, restore
                                    , controlBase, liftBaseOp_
@@ -122,6 +122,7 @@ import Control.Monad.Trans.Control ( MonadBaseControl, StM
 #if MIN_VERSION_base(4,3,0) || defined (__HADDOCK__)
 import Control.Monad.Trans.Control ( liftBaseOp )
 #endif
+
 
 --------------------------------------------------------------------------------
 -- * Throwing exceptions

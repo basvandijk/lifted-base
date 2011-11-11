@@ -11,7 +11,7 @@ Bug-reports:         https://github.com/basvandijk/lifted-base/issues
 Category:            Control
 Build-type:          Custom
 Cabal-version:       >= 1.9.2
-Description:         IO operations from the base library lifted to any instance of MonadBase or MonadBaseControl
+Description:         IO operations from the base library lifted to any instance of 'MonadBase' or 'MonadBaseControl'
 
 extra-source-files:  README.markdown, NEWS
 
@@ -27,9 +27,9 @@ source-repository head
 --------------------------------------------------------------------------------
 
 Library
-  Exposed-modules: Control.Exception.Control
-                   Control.Concurrent.MVar.Control
-                   System.Timeout.Control
+  Exposed-modules: Control.Exception.Lifted
+                   Control.Concurrent.MVar.Lifted
+                   System.Timeout.Lifted
 
   Build-depends: base                 >= 3     && < 4.5
                , base-unicode-symbols >= 0.1.1 && < 0.3

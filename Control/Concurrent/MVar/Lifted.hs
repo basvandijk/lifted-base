@@ -1,7 +1,7 @@
 {-# LANGUAGE UnicodeSyntax, NoImplicitPrelude, FlexibleContexts #-}
 
 {- |
-Module      :  Control.Concurrent.MVar.Control
+Module      :  Control.Concurrent.MVar.Lifted
 Copyright   :  Bas van Dijk
 License     :  BSD-style
 
@@ -9,10 +9,10 @@ Maintainer  :  Bas van Dijk <v.dijk.bas@gmail.com>
 Stability   :  experimental
 
 This is a wrapped version of 'Control.Concurrent.MVar' with types generalized
-from @IO@ to all monads in either 'MonadIO' or 'MonadControlIO'.
+from @IO@ to all monads in either 'MonadBase' or 'MonadBaseControl'.
 -}
 
-module Control.Concurrent.MVar.Control
+module Control.Concurrent.MVar.Lifted
     ( MVar.MVar
     , newEmptyMVar
     , newMVar
@@ -49,9 +49,11 @@ import Data.Function.Unicode ( (∘) )
 -- from transformers-base:
 import Control.Monad.Base ( MonadBase, liftBase )
 
--- from monad-control (this package):
+-- from monad-control:
 import Control.Monad.Trans.Control ( MonadBaseControl, liftBaseControl, liftBaseOp )
-import Control.Exception.Control   ( mask, onException )
+
+-- from lifted-base (this package):
+import Control.Exception.Lifted ( mask, onException )
 
 
 --------------------------------------------------------------------------------
