@@ -85,6 +85,7 @@ import Control.Monad.Trans.Control ( MonadBaseControl, liftBaseControl, liftBase
 -- from lifted-base (this package):
 import Control.Concurrent.MVar.Lifted
 
+
 --------------------------------------------------------------------------------
 -- Control.Concurrent
 --------------------------------------------------------------------------------
@@ -95,16 +96,16 @@ myThreadId = liftBase C.myThreadId
 
 -- | Generalized version of 'C.forkIO'.
 --
--- Note any side-effects in the forked computation are not visible in the
--- resulting computation.
+-- Note any monadic side-effects in @m@ of the forked computation will not be
+-- visible in the resulting computation.
 fork ∷ MonadBaseControl IO m ⇒ m () → m ThreadId
 fork m = liftBaseControl $ \runInIO →
            C.forkIO $ void $ runInIO m
 
 -- | Generalized version of 'C.forkIOWithUnmask'.
 --
--- Note any side-effects in the forked computation are not visible in the
--- resulting computation.
+-- Note any monadic side-effects in @m@ of the forked computation will not be
+-- visible in the resulting computation.
 forkWithUnmask ∷ MonadBaseControl IO m ⇒ ((∀ α. m α → m α) → m ()) → m ThreadId
 forkWithUnmask f = liftBaseControl $ \runInIO →
                      C.forkIOWithUnmask $ \unmask →
@@ -124,6 +125,9 @@ forkOn cap m = liftBaseControl $ \runInIO →
                  C.forkOn cap $ void $ runInIO m
 
 -- | Generalized version of 'C.forkOnWithUnmask'.
+--
+-- Note any monadic side-effects in @m@ of the forked computation will not be
+-- visible in the resulting computation.
 forkOnWithUnmask ∷ MonadBaseControl IO m ⇒ Int → ((∀ α. m α → m α) → m ()) → m ThreadId
 forkOnWithUnmask cap f = liftBaseControl $ \runInIO →
                            C.forkOnWithUnmask cap $ \unmask →
@@ -162,6 +166,9 @@ nmerge ∷ MonadBase IO m ⇒ [[α]] → m [α]
 nmerge = liftBase ∘ C.nmergeIO
 
 -- | Generalized version of 'C.forkOS'.
+--
+-- Note any monadic side-effects in @m@ of the forked computation will not be
+-- visible in the resulting computation.
 forkOS ∷ MonadBaseControl IO m ⇒ m () → m ThreadId
 forkOS m = liftBaseControl $ \runInIO →
              C.forkOS $ void $ runInIO m
