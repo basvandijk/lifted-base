@@ -33,6 +33,7 @@ source-repository head
 Library
   Exposed-modules: Control.Exception.Lifted
                    Control.Concurrent.MVar.Lifted
+                   Control.Concurrent.Lifted
                    System.Timeout.Lifted
 
   Build-depends: base                 >= 3     && < 4.5
