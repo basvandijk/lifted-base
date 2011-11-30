@@ -93,6 +93,7 @@ import Control.Concurrent.MVar.Lifted
 -- | Generalized version of 'C.myThreadId'.
 myThreadId ∷ MonadBase IO m ⇒ m ThreadId
 myThreadId = liftBase C.myThreadId
+{-# INLINABLE myThreadId #-}
 
 -- | Generalized version of 'C.forkIO'.
 --
@@ -101,6 +102,7 @@ myThreadId = liftBase C.myThreadId
 fork ∷ MonadBaseControl IO m ⇒ m () → m ThreadId
 fork m = liftBaseControl $ \runInIO →
            C.forkIO $ void $ runInIO m
+{-# INLINABLE fork #-}
 
 -- | Generalized version of 'C.forkIOWithUnmask'.
 --
@@ -110,14 +112,17 @@ forkWithUnmask ∷ MonadBaseControl IO m ⇒ ((∀ α. m α → m α) → m ()) 
 forkWithUnmask f = liftBaseControl $ \runInIO →
                      C.forkIOWithUnmask $ \unmask →
                        void $ runInIO $ f $ liftBaseOp_ unmask
+{-# INLINABLE  forkWithUnmask #-}
 
 -- | Generalized version of 'C.killThread'.
 killThread ∷ MonadBase IO m ⇒ ThreadId → m ()
 killThread = liftBase ∘ C.killThread
+{-# INLINABLE  killThread #-}
 
 -- | Generalized version of 'C.throwTo'.
 throwTo ∷ (MonadBase IO m, Exception e) ⇒ ThreadId → e → m ()
 throwTo tid e = liftBase $ C.throwTo tid e
+{-# INLINABLE throwTo #-}
 
 -- | Generalized version of 'C.forkOn'.
 --
@@ -126,6 +131,7 @@ throwTo tid e = liftBase $ C.throwTo tid e
 forkOn ∷ MonadBaseControl IO m ⇒ Int → m () → m ThreadId
 forkOn cap m = liftBaseControl $ \runInIO →
                  C.forkOn cap $ void $ runInIO m
+{-# INLINABLE forkOn #-}
 
 -- | Generalized version of 'C.forkOnWithUnmask'.
 --
@@ -135,38 +141,47 @@ forkOnWithUnmask ∷ MonadBaseControl IO m ⇒ Int → ((∀ α. m α → m α) 
 forkOnWithUnmask cap f = liftBaseControl $ \runInIO →
                            C.forkOnWithUnmask cap $ \unmask →
                              void $ runInIO $ f $ liftBaseOp_ unmask
+{-# INLINABLE forkOnWithUnmask #-}
 
 -- | Generalized version of 'C.getNumCapabilities'.
 getNumCapabilities ∷ MonadBase IO m ⇒ m Int
 getNumCapabilities = liftBase C.getNumCapabilities
+{-# INLINABLE getNumCapabilities #-}
 
 -- | Generalized version of 'C.threadCapability'.
 threadCapability ∷ MonadBase IO m ⇒ ThreadId → m (Int, Bool)
 threadCapability = liftBase ∘ C.threadCapability
+{-# INLINABLE threadCapability #-}
 
 -- | Generalized version of 'C.yield'.
 yield ∷ MonadBase IO m ⇒ m ()
 yield = liftBase C.yield
+{-# INLINABLE yield #-}
 
 -- | Generalized version of 'C.threadDelay'.
 threadDelay ∷ MonadBase IO m ⇒ Int → m ()
 threadDelay = liftBase ∘  C.threadDelay
+{-# INLINABLE threadDelay #-}
 
 -- | Generalized version of 'C.threadWaitRead'.
 threadWaitRead ∷ MonadBase IO m ⇒ Fd → m ()
 threadWaitRead = liftBase ∘ C.threadWaitRead
+{-# INLINABLE threadWaitRead #-}
 
 -- | Generalized version of 'C.threadWaitWrite'.
 threadWaitWrite ∷ MonadBase IO m ⇒ Fd → m ()
 threadWaitWrite = liftBase ∘ C.threadWaitWrite
+{-# INLINABLE threadWaitWrite #-}
 
 -- | Generalized version of 'C.mergeIO'.
 merge ∷ MonadBase IO m ⇒ [α] → [α] → m [α]
 merge xs ys = liftBase $ C.mergeIO xs ys
+{-# INLINABLE merge #-}
 
 -- | Generalized version of 'C.nmergeIO'.
 nmerge ∷ MonadBase IO m ⇒ [[α]] → m [α]
 nmerge = liftBase ∘ C.nmergeIO
+{-# INLINABLE nmerge #-}
 
 -- | Generalized version of 'C.forkOS'.
 --
@@ -175,15 +190,19 @@ nmerge = liftBase ∘ C.nmergeIO
 forkOS ∷ MonadBaseControl IO m ⇒ m () → m ThreadId
 forkOS m = liftBaseControl $ \runInIO →
              C.forkOS $ void $ runInIO m
+{-# INLINABLE forkOS #-}
 
 -- | Generalized version of 'C.isCurrentThreadBound'.
 isCurrentThreadBound ∷ MonadBase IO m ⇒ m Bool
 isCurrentThreadBound = liftBase C.isCurrentThreadBound
+{-# INLINABLE isCurrentThreadBound #-}
 
 -- | Generalized version of 'C.runInBoundThread'.
 runInBoundThread ∷ MonadBaseControl IO m ⇒ m α → m α
 runInBoundThread = liftBaseOp_ C.runInBoundThread
+{-# INLINABLE runInBoundThread #-}
 
 -- | Generalized version of 'C.runInUnboundThread'.
 runInUnboundThread ∷ MonadBaseControl IO m ⇒ m α → m α
 runInUnboundThread = liftBaseOp_ C.runInUnboundThread
+{-# INLINABLE runInUnboundThread #-}
