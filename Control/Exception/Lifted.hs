@@ -116,7 +116,7 @@ import Control.Monad.Base ( MonadBase, liftBase )
 
 -- from monad-control:
 import Control.Monad.Trans.Control ( MonadBaseControl, StM
-                                   , liftBaseControl, restore
+                                   , liftBaseControl, restoreM
                                    , controlBase, liftBaseOp_
                                    )
 #if MIN_VERSION_base(4,3,0) || defined (__HADDOCK__)
@@ -200,7 +200,7 @@ handleJust p handler a = controlBase $ \runInIO →
 --------------------------------------------------------------------------------
 
 sequenceEither ∷ MonadBaseControl IO m ⇒ Either e (StM m α) → m (Either e α)
-sequenceEither = either (return ∘ Left) (liftM Right ∘ restore)
+sequenceEither = either (return ∘ Left) (liftM Right ∘ restoreM)
 {-# INLINE sequenceEither #-}
 
 -- |Generalized version of 'E.try'.
@@ -297,8 +297,8 @@ bracket ∷ MonadBaseControl IO m
         → m γ
 bracket before after thing = controlBase $ \runInIO →
                                E.bracket (runInIO before)
-                                         (\st → runInIO $ restore st >>= after)
-                                         (\st → runInIO $ restore st >>= thing)
+                                         (\st → runInIO $ restoreM st >>= after)
+                                         (\st → runInIO $ restoreM st >>= thing)
 
 -- |Generalized version of 'E.bracket_'.  Note, any monadic side
 -- effects in @m@ of /both/ the \"acquire\" and \"release\"
@@ -337,8 +337,8 @@ bracketOnError ∷ MonadBaseControl IO m
 bracketOnError before after thing =
     controlBase $ \runInIO →
       E.bracketOnError (runInIO before)
-                       (\st → runInIO $ restore st >>= after)
-                       (\st → runInIO $ restore st >>= thing)
+                       (\st → runInIO $ restoreM st >>= after)
+                       (\st → runInIO $ restoreM st >>= thing)
 
 
 --------------------------------------------------------------------------------
