@@ -120,6 +120,9 @@ throwTo ∷ (MonadBase IO m, Exception e) ⇒ ThreadId → e → m ()
 throwTo tid e = liftBase $ C.throwTo tid e
 
 -- | Generalized version of 'C.forkOn'.
+--
+-- Note any monadic side-effects in @m@ of the forked computation will not be
+-- visible in the resulting computation.
 forkOn ∷ MonadBaseControl IO m ⇒ Int → m () → m ThreadId
 forkOn cap m = liftBaseControl $ \runInIO →
                  C.forkOn cap $ void $ runInIO m
