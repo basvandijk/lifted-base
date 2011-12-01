@@ -28,7 +28,7 @@ import qualified System.Timeout as T ( timeout )
 import Data.Function.Unicode ( (∘) )
 
 -- from monad-control:
-import Control.Monad.Trans.Control ( MonadBaseControl, restoreM, liftBaseControl )
+import Control.Monad.Trans.Control ( MonadBaseControl, restoreM, liftBaseWith )
 
 -- | Generalized version of 'T.timeout'.
 --
@@ -36,6 +36,6 @@ import Control.Monad.Trans.Control ( MonadBaseControl, restoreM, liftBaseControl
 -- discarded. When the computation completes within the given time the
 -- side-effects are restored on return.
 timeout ∷ MonadBaseControl IO m ⇒ Int → m α → m (Maybe α)
-timeout t m = liftBaseControl (\runInIO → T.timeout t (runInIO m)) >>=
+timeout t m = liftBaseWith (\runInIO → T.timeout t (runInIO m)) >>=
                 maybe (return Nothing) (liftM Just ∘ restoreM)
 {-# INLINABLE timeout #-}

@@ -80,7 +80,7 @@ import Data.Function.Unicode ( (∘) )
 import Control.Monad.Base ( MonadBase, liftBase )
 
 -- from monad-control:
-import Control.Monad.Trans.Control ( MonadBaseControl, liftBaseControl, liftBaseOp_ )
+import Control.Monad.Trans.Control ( MonadBaseControl, liftBaseWith, liftBaseOp_ )
 
 -- from lifted-base (this package):
 import Control.Concurrent.MVar.Lifted
@@ -100,7 +100,7 @@ myThreadId = liftBase C.myThreadId
 -- Note any monadic side-effects in @m@ of the forked computation will not be
 -- visible in the resulting computation.
 fork ∷ MonadBaseControl IO m ⇒ m () → m ThreadId
-fork m = liftBaseControl $ \runInIO →
+fork m = liftBaseWith $ \runInIO →
            C.forkIO $ void $ runInIO m
 {-# INLINABLE fork #-}
 
@@ -109,7 +109,7 @@ fork m = liftBaseControl $ \runInIO →
 -- Note any monadic side-effects in @m@ of the forked computation will not be
 -- visible in the resulting computation.
 forkWithUnmask ∷ MonadBaseControl IO m ⇒ ((∀ α. m α → m α) → m ()) → m ThreadId
-forkWithUnmask f = liftBaseControl $ \runInIO →
+forkWithUnmask f = liftBaseWith $ \runInIO →
                      C.forkIOWithUnmask $ \unmask →
                        void $ runInIO $ f $ liftBaseOp_ unmask
 {-# INLINABLE  forkWithUnmask #-}
@@ -129,7 +129,7 @@ throwTo tid e = liftBase $ C.throwTo tid e
 -- Note any monadic side-effects in @m@ of the forked computation will not be
 -- visible in the resulting computation.
 forkOn ∷ MonadBaseControl IO m ⇒ Int → m () → m ThreadId
-forkOn cap m = liftBaseControl $ \runInIO →
+forkOn cap m = liftBaseWith $ \runInIO →
                  C.forkOn cap $ void $ runInIO m
 {-# INLINABLE forkOn #-}
 
@@ -138,7 +138,7 @@ forkOn cap m = liftBaseControl $ \runInIO →
 -- Note any monadic side-effects in @m@ of the forked computation will not be
 -- visible in the resulting computation.
 forkOnWithUnmask ∷ MonadBaseControl IO m ⇒ Int → ((∀ α. m α → m α) → m ()) → m ThreadId
-forkOnWithUnmask cap f = liftBaseControl $ \runInIO →
+forkOnWithUnmask cap f = liftBaseWith $ \runInIO →
                            C.forkOnWithUnmask cap $ \unmask →
                              void $ runInIO $ f $ liftBaseOp_ unmask
 {-# INLINABLE forkOnWithUnmask #-}
@@ -188,7 +188,7 @@ nmerge = liftBase ∘ C.nmergeIO
 -- Note any monadic side-effects in @m@ of the forked computation will not be
 -- visible in the resulting computation.
 forkOS ∷ MonadBaseControl IO m ⇒ m () → m ThreadId
-forkOS m = liftBaseControl $ \runInIO →
+forkOS m = liftBaseWith $ \runInIO →
              C.forkOS $ void $ runInIO m
 {-# INLINABLE forkOS #-}
 

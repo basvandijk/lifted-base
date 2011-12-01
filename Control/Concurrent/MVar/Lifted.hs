@@ -50,7 +50,7 @@ import Data.Function.Unicode ( (∘) )
 import Control.Monad.Base ( MonadBase, liftBase )
 
 -- from monad-control:
-import Control.Monad.Trans.Control ( MonadBaseControl, liftBaseControl, liftBaseOp )
+import Control.Monad.Trans.Control ( MonadBaseControl, liftBaseWith, liftBaseOp )
 
 -- from lifted-base (this package):
 import Control.Exception.Lifted ( mask, onException )
@@ -132,6 +132,6 @@ modifyMVar mv f = mask $ \restore → do
 -- Note any monadic side effects in @m@ of the \"finalizer\" computation are
 -- discarded.
 addMVarFinalizer ∷ MonadBaseControl IO m ⇒ MVar α → m () → m ()
-addMVarFinalizer mv m = liftBaseControl $ \runInIO →
+addMVarFinalizer mv m = liftBaseWith $ \runInIO →
                           MVar.addMVarFinalizer mv (void $ runInIO m)
 {-# INLINABLE addMVarFinalizer #-}
