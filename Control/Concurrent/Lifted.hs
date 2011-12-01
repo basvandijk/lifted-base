@@ -80,7 +80,8 @@ import Data.Function.Unicode ( (∘) )
 import Control.Monad.Base ( MonadBase, liftBase )
 
 -- from monad-control:
-import Control.Monad.Trans.Control ( MonadBaseControl, liftBaseWith, liftBaseOp_ )
+import Control.Monad.Trans.Control
+    ( MonadBaseControl, liftBaseWith, liftBaseOp_, liftBaseDiscard )
 
 -- from lifted-base (this package):
 import Control.Concurrent.MVar.Lifted
@@ -100,8 +101,7 @@ myThreadId = liftBase C.myThreadId
 -- Note any monadic side-effects in @m@ of the forked computation will not be
 -- visible in the resulting computation.
 fork ∷ MonadBaseControl IO m ⇒ m () → m ThreadId
-fork m = liftBaseWith $ \runInIO →
-           C.forkIO $ void $ runInIO m
+fork = liftBaseDiscard C.forkIO
 {-# INLINABLE fork #-}
 
 -- | Generalized version of 'C.forkIOWithUnmask'.
@@ -129,8 +129,7 @@ throwTo tid e = liftBase $ C.throwTo tid e
 -- Note any monadic side-effects in @m@ of the forked computation will not be
 -- visible in the resulting computation.
 forkOn ∷ MonadBaseControl IO m ⇒ Int → m () → m ThreadId
-forkOn cap m = liftBaseWith $ \runInIO →
-                 C.forkOn cap $ void $ runInIO m
+forkOn = liftBaseDiscard ∘ C.forkOn
 {-# INLINABLE forkOn #-}
 
 -- | Generalized version of 'C.forkOnWithUnmask'.
@@ -188,8 +187,7 @@ nmerge = liftBase ∘ C.nmergeIO
 -- Note any monadic side-effects in @m@ of the forked computation will not be
 -- visible in the resulting computation.
 forkOS ∷ MonadBaseControl IO m ⇒ m () → m ThreadId
-forkOS m = liftBaseWith $ \runInIO →
-             C.forkOS $ void $ runInIO m
+forkOS = liftBaseDiscard C.forkOS
 {-# INLINABLE forkOS #-}
 
 -- | Generalized version of 'C.isCurrentThreadBound'.

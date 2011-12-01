@@ -38,7 +38,7 @@ module Control.Concurrent.MVar.Lifted
 import Data.Bool     ( Bool )
 import Data.Function ( ($) )
 import Data.Maybe    ( Maybe )
-import Control.Monad ( return, void )
+import Control.Monad ( return )
 import System.IO     ( IO )
 import           Control.Concurrent.MVar  ( MVar )
 import qualified Control.Concurrent.MVar as MVar
@@ -50,7 +50,7 @@ import Data.Function.Unicode ( (∘) )
 import Control.Monad.Base ( MonadBase, liftBase )
 
 -- from monad-control:
-import Control.Monad.Trans.Control ( MonadBaseControl, liftBaseWith, liftBaseOp )
+import Control.Monad.Trans.Control ( MonadBaseControl, liftBaseOp, liftBaseDiscard )
 
 -- from lifted-base (this package):
 import Control.Exception.Lifted ( mask, onException )
@@ -132,6 +132,5 @@ modifyMVar mv f = mask $ \restore → do
 -- Note any monadic side effects in @m@ of the \"finalizer\" computation are
 -- discarded.
 addMVarFinalizer ∷ MonadBaseControl IO m ⇒ MVar α → m () → m ()
-addMVarFinalizer mv m = liftBaseWith $ \runInIO →
-                          MVar.addMVarFinalizer mv (void $ runInIO m)
+addMVarFinalizer = liftBaseDiscard ∘ MVar.addMVarFinalizer
 {-# INLINABLE addMVarFinalizer #-}
