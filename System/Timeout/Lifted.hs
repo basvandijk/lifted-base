@@ -1,4 +1,4 @@
-{-# LANGUAGE UnicodeSyntax, NoImplicitPrelude, FlexibleContexts #-}
+{-# LANGUAGE CPP, UnicodeSyntax, NoImplicitPrelude, FlexibleContexts #-}
 
 -------------------------------------------------------------------------------
 -- |
@@ -29,6 +29,8 @@ import Data.Function.Unicode ( (∘) )
 
 -- from monad-control:
 import Control.Monad.Trans.Control ( MonadBaseControl, restoreM, liftBaseWith )
+
+#include "inlinable.h"
 
 -- | Generalized version of 'T.timeout'.
 --

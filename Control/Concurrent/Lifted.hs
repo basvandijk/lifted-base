@@ -1,4 +1,4 @@
-{-# LANGUAGE UnicodeSyntax, NoImplicitPrelude, FlexibleContexts, RankNTypes #-}
+{-# LANGUAGE CPP, UnicodeSyntax, NoImplicitPrelude, FlexibleContexts, RankNTypes #-}
 
 {- |
 Module      :  Control.Concurrent.Lifted
@@ -19,15 +19,19 @@ module Control.Concurrent.Lifted
       -- * Basic concurrency operations
     , myThreadId
     , fork
+#if MIN_VERSION_base(4,4,0)
     , forkWithUnmask
+#endif
     , killThread
     , throwTo
 
+#if MIN_VERSION_base(4,4,0)
       -- ** Threads with affinity
     , forkOn
     , forkOnWithUnmask
     , getNumCapabilities
     , threadCapability
+#endif
 
       -- * Scheduling
     , yield
@@ -65,7 +69,6 @@ module Control.Concurrent.Lifted
 import Data.Bool          ( Bool )
 import Data.Int           ( Int )
 import Data.Function      ( ($) )
-import Control.Monad      ( void )
 import System.IO          ( IO )
 import System.Posix.Types ( Fd )
 import Control.Exception  ( Exception )
@@ -80,11 +83,17 @@ import Data.Function.Unicode ( (∘) )
 import Control.Monad.Base ( MonadBase, liftBase )
 
 -- from monad-control:
-import Control.Monad.Trans.Control
-    ( MonadBaseControl, liftBaseWith, liftBaseOp_, liftBaseDiscard )
+import Control.Monad.Trans.Control ( MonadBaseControl, liftBaseOp_, liftBaseDiscard )
+
+#if MIN_VERSION_base(4,4,0)
+import Control.Monad.Trans.Control ( liftBaseWith )
+import Control.Monad               ( void )
+#endif
 
 -- from lifted-base (this package):
 import Control.Concurrent.MVar.Lifted
+
+#include "inlinable.h"
 
 
 --------------------------------------------------------------------------------
@@ -105,6 +114,7 @@ fork ∷ MonadBaseControl IO m ⇒ m () → m ThreadId
 fork = liftBaseDiscard C.forkIO
 {-# INLINABLE fork #-}
 
+#if MIN_VERSION_base(4,4,0)
 -- | Generalized version of 'C.forkIOWithUnmask'.
 --
 -- Note that, while the forked computation @m ()@ has access to the captured
@@ -115,6 +125,7 @@ forkWithUnmask f = liftBaseWith $ \runInIO →
                      C.forkIOWithUnmask $ \unmask →
                        void $ runInIO $ f $ liftBaseOp_ unmask
 {-# INLINABLE  forkWithUnmask #-}
+#endif
 
 -- | Generalized version of 'C.killThread'.
 killThread ∷ MonadBase IO m ⇒ ThreadId → m ()
@@ -126,6 +137,7 @@ throwTo ∷ (MonadBase IO m, Exception e) ⇒ ThreadId → e → m ()
 throwTo tid e = liftBase $ C.throwTo tid e
 {-# INLINABLE throwTo #-}
 
+#if MIN_VERSION_base(4,4,0)
 -- | Generalized version of 'C.forkOn'.
 --
 -- Note that, while the forked computation @m ()@ has access to the captured
@@ -155,6 +167,7 @@ getNumCapabilities = liftBase C.getNumCapabilities
 threadCapability ∷ MonadBase IO m ⇒ ThreadId → m (Int, Bool)
 threadCapability = liftBase ∘ C.threadCapability
 {-# INLINABLE threadCapability #-}
+#endif
 
 -- | Generalized version of 'C.yield'.
 yield ∷ MonadBase IO m ⇒ m ()

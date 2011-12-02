@@ -1,5 +1,5 @@
 Name:                lifted-base
-Version:             0.1
+Version:             0.1.0.1
 Synopsis:            lifted IO operations from the base library
 License:             BSD3
 License-file:        LICENSE
@@ -26,6 +26,8 @@ extra-source-files:  README.markdown, NEWS
 -- TODO: Remove when http://hackage.haskell.org/trac/hackage/ticket/792 is fixed:
 extra-source-files:  test.hs
 
+extra-source-files: include/inlinable.h
+
 --------------------------------------------------------------------------------
 
 source-repository head
@@ -44,6 +46,9 @@ Library
                , base-unicode-symbols >= 0.1.1 && < 0.3
                , transformers-base    >= 0.4   && < 0.5
                , monad-control        >= 0.3   && < 0.4
+
+  Include-dirs:       include
+  Includes:           inlinable.h
 
   Ghc-options: -Wall
 

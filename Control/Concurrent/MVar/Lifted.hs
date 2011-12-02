@@ -1,4 +1,4 @@
-{-# LANGUAGE UnicodeSyntax, NoImplicitPrelude, FlexibleContexts #-}
+{-# LANGUAGE CPP, UnicodeSyntax, NoImplicitPrelude, FlexibleContexts #-}
 
 {- |
 Module      :  Control.Concurrent.MVar.Lifted
@@ -43,6 +43,10 @@ import System.IO     ( IO )
 import           Control.Concurrent.MVar  ( MVar )
 import qualified Control.Concurrent.MVar as MVar
 
+#if __GLASGOW_HASKELL__ < 700
+import Control.Monad ( (>>=), (>>), fail )
+#endif
+
 -- from base-unicode-symbols:
 import Data.Function.Unicode ( (∘) )
 
@@ -53,8 +57,15 @@ import Control.Monad.Base ( MonadBase, liftBase )
 import Control.Monad.Trans.Control ( MonadBaseControl, liftBaseOp, liftBaseDiscard )
 
 -- from lifted-base (this package):
-import Control.Exception.Lifted ( mask, onException )
+import Control.Exception.Lifted ( onException
+#if MIN_VERSION_base(4,3,0)
+                                , mask
+#else
+                                , block, unblock
+#endif
+                                )
 
+#include "inlinable.h"
 
 --------------------------------------------------------------------------------
 -- * MVars
@@ -112,19 +123,34 @@ withMVar = liftBaseOp ∘ MVar.withMVar
 
 -- | Generalized version of 'MVar.modifyMVar_'.
 modifyMVar_ ∷ (MonadBaseControl IO m, MonadBase IO m) ⇒ MVar α → (α → m α) → m ()
+
+-- | Generalized version of 'MVar.modifyMVar'.
+modifyMVar ∷ (MonadBaseControl IO m, MonadBase IO m) ⇒ MVar α → (α → m (α, β)) → m β
+
+#if MIN_VERSION_base(4,3,0)
 modifyMVar_ mv f = mask $ \restore → do
                      x  ← takeMVar mv
                      x' ← restore (f x) `onException` putMVar mv x
                      putMVar mv x'
-{-# INLINABLE modifyMVar_ #-}
 
--- | Generalized version of 'MVar.modifyMVar'.
-modifyMVar ∷ (MonadBaseControl IO m, MonadBase IO m) ⇒ MVar α → (α → m (α, β)) → m β
 modifyMVar mv f = mask $ \restore → do
                     x       ← takeMVar mv
                     (x', y) ← restore (f x) `onException` putMVar mv x
                     putMVar mv x'
                     return y
+#else
+modifyMVar_ mv f = block $ do
+                     x  ← takeMVar mv
+                     x' ← unblock (f x) `onException` putMVar mv x
+                     putMVar mv x'
+
+modifyMVar mv f = block $ do
+                    x       ← takeMVar mv
+                    (x', y) ← unblock (f x) `onException` putMVar mv x
+                    putMVar mv x'
+                    return y
+#endif
+{-# INLINABLE modifyMVar_ #-}
 {-# INLINABLE modifyMVar #-}
 
 -- | Generalized version of 'MVar.addMVarFinalizer'.

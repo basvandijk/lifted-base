@@ -74,10 +74,7 @@ import Data.Either     ( Either(Left, Right), either )
 import Data.Maybe      ( Maybe )
 import Control.Monad   ( Monad, (>>=), return, liftM )
 import System.IO.Error ( IOError )
-
-#if MIN_VERSION_base(4,3,0) || defined (__HADDOCK__)
 import System.IO       ( IO )
-#endif
 
 #if __GLASGOW_HASKELL__ < 700
 import Control.Monad   ( fail )
@@ -123,6 +120,7 @@ import Control.Monad.Trans.Control ( MonadBaseControl, StM
 import Control.Monad.Trans.Control ( liftBaseOp )
 #endif
 
+#include "inlinable.h"
 
 --------------------------------------------------------------------------------
 -- * Throwing exceptions
