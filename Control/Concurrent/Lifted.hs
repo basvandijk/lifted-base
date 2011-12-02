@@ -98,16 +98,18 @@ myThreadId = liftBase C.myThreadId
 
 -- | Generalized version of 'C.forkIO'.
 --
--- Note any monadic side-effects in @m@ of the forked computation will not be
--- visible in the resulting computation.
+-- Note that, while the forked computation @m ()@ has access to the captured
+-- state, all its side-effects in @m@ are discarded. It is run only for its
+-- side-effects in 'IO'.
 fork ∷ MonadBaseControl IO m ⇒ m () → m ThreadId
 fork = liftBaseDiscard C.forkIO
 {-# INLINABLE fork #-}
 
 -- | Generalized version of 'C.forkIOWithUnmask'.
 --
--- Note any monadic side-effects in @m@ of the forked computation will not be
--- visible in the resulting computation.
+-- Note that, while the forked computation @m ()@ has access to the captured
+-- state, all its side-effects in @m@ are discarded. It is run only for its
+-- side-effects in 'IO'.
 forkWithUnmask ∷ MonadBaseControl IO m ⇒ ((∀ α. m α → m α) → m ()) → m ThreadId
 forkWithUnmask f = liftBaseWith $ \runInIO →
                      C.forkIOWithUnmask $ \unmask →
@@ -126,16 +128,18 @@ throwTo tid e = liftBase $ C.throwTo tid e
 
 -- | Generalized version of 'C.forkOn'.
 --
--- Note any monadic side-effects in @m@ of the forked computation will not be
--- visible in the resulting computation.
+-- Note that, while the forked computation @m ()@ has access to the captured
+-- state, all its side-effects in @m@ are discarded. It is run only for its
+-- side-effects in 'IO'.
 forkOn ∷ MonadBaseControl IO m ⇒ Int → m () → m ThreadId
 forkOn = liftBaseDiscard ∘ C.forkOn
 {-# INLINABLE forkOn #-}
 
 -- | Generalized version of 'C.forkOnWithUnmask'.
 --
--- Note any monadic side-effects in @m@ of the forked computation will not be
--- visible in the resulting computation.
+-- Note that, while the forked computation @m ()@ has access to the captured
+-- state, all its side-effects in @m@ are discarded. It is run only for its
+-- side-effects in 'IO'.
 forkOnWithUnmask ∷ MonadBaseControl IO m ⇒ Int → ((∀ α. m α → m α) → m ()) → m ThreadId
 forkOnWithUnmask cap f = liftBaseWith $ \runInIO →
                            C.forkOnWithUnmask cap $ \unmask →
@@ -184,8 +188,9 @@ nmerge = liftBase ∘ C.nmergeIO
 
 -- | Generalized version of 'C.forkOS'.
 --
--- Note any monadic side-effects in @m@ of the forked computation will not be
--- visible in the resulting computation.
+-- Note that, while the forked computation @m ()@ has access to the captured
+-- state, all its side-effects in @m@ are discarded. It is run only for its
+-- side-effects in 'IO'.
 forkOS ∷ MonadBaseControl IO m ⇒ m () → m ThreadId
 forkOS = liftBaseDiscard C.forkOS
 {-# INLINABLE forkOS #-}

@@ -1,6 +1,6 @@
 Name:                lifted-base
 Version:             0.1
-Synopsis:            IO operations from the base library lifted to any instance of MonadBase or MonadBaseControl
+Synopsis:            lifted IO operations from the base library
 License:             BSD3
 License-file:        LICENSE
 Author:              Bas van Dijk, Anders Kaseorg
