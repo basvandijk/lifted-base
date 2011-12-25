@@ -35,13 +35,16 @@ module Control.Concurrent.MVar.Lifted
 --------------------------------------------------------------------------------
 
 -- from base:
-import Data.Bool     ( Bool )
-import Data.Function ( ($) )
-import Data.Maybe    ( Maybe )
-import Control.Monad ( return )
-import System.IO     ( IO )
+import Data.Bool           ( Bool )
+import Data.Function       ( ($) )
+import Data.Maybe          ( Maybe(Nothing, Just) )
+import Data.Tuple          ( snd )
+import Control.Monad       ( return, liftM )
+import System.IO           ( IO )
 import           Control.Concurrent.MVar  ( MVar )
 import qualified Control.Concurrent.MVar as MVar
+import qualified Control.Exception as E
+
 
 #if __GLASGOW_HASKELL__ < 700
 import Control.Monad ( (>>=), (>>), fail )
@@ -54,16 +57,18 @@ import Data.Function.Unicode ( (∘) )
 import Control.Monad.Base ( MonadBase, liftBase )
 
 -- from monad-control:
-import Control.Monad.Trans.Control ( MonadBaseControl, liftBaseOp, liftBaseDiscard )
+import Control.Monad.Trans.Control ( MonadBaseControl, getValueM
+                                   , control, liftBaseOp, liftBaseDiscard
+                                   )
 
--- from lifted-base (this package):
-import Control.Exception.Lifted ( onException
 #if MIN_VERSION_base(4,3,0)
-                                , mask
+import Control.Monad ( void )
 #else
-                                , block, unblock
+import Data.Functor ( Functor, fmap )
+import Data.Function ( const )
+void ∷ Functor f ⇒ f α → f ()
+void = fmap (const ())
 #endif
-                                )
 
 #include "inlinable.h"
 
@@ -128,27 +133,45 @@ modifyMVar_ ∷ (MonadBaseControl IO m, MonadBase IO m) ⇒ MVar α → (α → 
 modifyMVar ∷ (MonadBaseControl IO m, MonadBase IO m) ⇒ MVar α → (α → m (α, β)) → m β
 
 #if MIN_VERSION_base(4,3,0)
-modifyMVar_ mv f = mask $ \restore → do
-                     x  ← takeMVar mv
-                     x' ← restore (f x) `onException` putMVar mv x
-                     putMVar mv x'
+modifyMVar_ mv f = void $ control $ \runInIO →
+                     E.mask $ \restore → do
+                       old ← MVar.takeMVar mv
+                       stM ← restore (runInIO (f old))
+                               `E.onException` MVar.putMVar mv old
+                       case getValueM stM of
+                         Nothing  → MVar.putMVar mv old
+                         Just new → MVar.putMVar mv new
+                       return stM
 
-modifyMVar mv f = mask $ \restore → do
-                    x       ← takeMVar mv
-                    (x', y) ← restore (f x) `onException` putMVar mv x
-                    putMVar mv x'
-                    return y
+modifyMVar mv f = liftM snd $ control $ \runInIO →
+                    E.mask $ \restore → do
+                      old ← MVar.takeMVar mv
+                      stM ← restore (runInIO (f old))
+                              `E.onException` MVar.putMVar mv old
+                      case getValueM stM of
+                        Nothing       → MVar.putMVar mv old
+                        Just (new, _) → MVar.putMVar mv new
+                      return stM
 #else
-modifyMVar_ mv f = block $ do
-                     x  ← takeMVar mv
-                     x' ← unblock (f x) `onException` putMVar mv x
-                     putMVar mv x'
+modifyMVar_ mv f = void $ control $ \runInIO →
+                     E.block $ do
+                       old ← MVar.takeMVar mv
+                       stM ← E.unblock (runInIO (f old))
+                               `E.onException` MVar.putMVar mv old
+                       case getValueM stM of
+                         Nothing  → MVar.putMVar mv old
+                         Just new → MVar.putMVar mv new
+                       return stM
 
-modifyMVar mv f = block $ do
-                    x       ← takeMVar mv
-                    (x', y) ← unblock (f x) `onException` putMVar mv x
-                    putMVar mv x'
-                    return y
+modifyMVar mv f = liftM snd $ control $ \runInIO →
+                    E.block $ do
+                      old ← MVar.takeMVar mv
+                      stM ← E.unblock (runInIO (f old))
+                              `E.onException` MVar.putMVar mv old
+                      case getValueM stM of
+                        Nothing       → MVar.putMVar mv old
+                        Just (new, _) → MVar.putMVar mv new
+                      return stM
 #endif
 {-# INLINABLE modifyMVar_ #-}
 {-# INLINABLE modifyMVar #-}
