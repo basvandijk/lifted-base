@@ -1,5 +1,5 @@
 Name:                lifted-base
-Version:             0.1.0.2
+Version:             0.1.0.3
 Synopsis:            lifted IO operations from the base library
 License:             BSD3
 License-file:        LICENSE

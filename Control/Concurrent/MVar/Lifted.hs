@@ -1,4 +1,9 @@
-{-# LANGUAGE CPP, UnicodeSyntax, NoImplicitPrelude, FlexibleContexts #-}
+{-# LANGUAGE CPP
+           , UnicodeSyntax
+           , NoImplicitPrelude
+           , FlexibleContexts
+           , TupleSections
+  #-}
 
 {- |
 Module      :  Control.Concurrent.MVar.Lifted
@@ -35,13 +40,22 @@ module Control.Concurrent.MVar.Lifted
 --------------------------------------------------------------------------------
 
 -- from base:
-import Data.Bool     ( Bool )
+import Data.Bool     ( Bool(False, True) )
 import Data.Function ( ($) )
+import Data.Functor  ( fmap )
+import Data.IORef    ( newIORef, readIORef, writeIORef )
 import Data.Maybe    ( Maybe )
-import Control.Monad ( return )
+import Control.Monad ( return, when )
 import System.IO     ( IO )
 import           Control.Concurrent.MVar  ( MVar )
 import qualified Control.Concurrent.MVar as MVar
+import Control.Exception ( onException
+#if MIN_VERSION_base(4,3,0)
+                         , mask, mask_
+#else
+                         , block, unblock
+#endif
+                         )
 
 #if __GLASGOW_HASKELL__ < 700
 import Control.Monad ( (>>=), (>>), fail )
@@ -54,16 +68,11 @@ import Data.Function.Unicode ( (∘) )
 import Control.Monad.Base ( MonadBase, liftBase )
 
 -- from monad-control:
-import Control.Monad.Trans.Control ( MonadBaseControl, liftBaseOp, liftBaseDiscard )
-
--- from lifted-base (this package):
-import Control.Exception.Lifted ( onException
-#if MIN_VERSION_base(4,3,0)
-                                , mask
-#else
-                                , block, unblock
-#endif
-                                )
+import Control.Monad.Trans.Control ( MonadBaseControl
+                                   , control
+                                   , liftBaseOp
+                                   , liftBaseDiscard
+                                   )
 
 #include "inlinable.h"
 
@@ -123,34 +132,41 @@ withMVar = liftBaseOp ∘ MVar.withMVar
 
 -- | Generalized version of 'MVar.modifyMVar_'.
 modifyMVar_ ∷ (MonadBaseControl IO m, MonadBase IO m) ⇒ MVar α → (α → m α) → m ()
+modifyMVar_ mv = modifyMVar mv ∘ (fmap (, ()) ∘)
+{-# INLINABLE modifyMVar_ #-}
 
 -- | Generalized version of 'MVar.modifyMVar'.
 modifyMVar ∷ (MonadBaseControl IO m, MonadBase IO m) ⇒ MVar α → (α → m (α, β)) → m β
 
 #if MIN_VERSION_base(4,3,0)
-modifyMVar_ mv f = mask $ \restore → do
-                     x  ← takeMVar mv
-                     x' ← restore (f x) `onException` putMVar mv x
-                     putMVar mv x'
-
-modifyMVar mv f = mask $ \restore → do
-                    x       ← takeMVar mv
-                    (x', y) ← restore (f x) `onException` putMVar mv x
-                    putMVar mv x'
-                    return y
+modifyMVar mv f = control $ \runInIO -> mask $ \restore → do
+    aborted ← newIORef True
+    let f' x = do
+        (x', a) ← f x
+        liftBase $ mask_ $ do
+          writeIORef aborted False
+          MVar.putMVar mv x'
+        return a
+    x ← MVar.takeMVar mv
+    stM ← restore (runInIO (f' x)) `onException` MVar.putMVar mv x
+    abort ← readIORef aborted
+    when abort $ MVar.putMVar mv x
+    return stM
 #else
-modifyMVar_ mv f = block $ do
-                     x  ← takeMVar mv
-                     x' ← unblock (f x) `onException` putMVar mv x
-                     putMVar mv x'
-
-modifyMVar mv f = block $ do
-                    x       ← takeMVar mv
-                    (x', y) ← unblock (f x) `onException` putMVar mv x
-                    putMVar mv x'
-                    return y
+modifyMVar mv f = control $ \runInIO -> block $ do
+    aborted ← newIORef True
+    let f' x = do
+        (x', a) ← f x
+        liftBase $ block $ do
+          writeIORef aborted False
+          MVar.putMVar mv x'
+        return a
+    x ← MVar.takeMVar mv
+    stM ← unblock (runInIO (f' x)) `onException` MVar.putMVar mv x
+    abort ← readIORef aborted
+    when abort $ MVar.putMVar mv x
+    return stM
 #endif
-{-# INLINABLE modifyMVar_ #-}
 {-# INLINABLE modifyMVar #-}
 
 -- | Generalized version of 'MVar.addMVarFinalizer'.
