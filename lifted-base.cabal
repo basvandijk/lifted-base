@@ -60,7 +60,7 @@ test-suite test-lifted-base
 
   build-depends: base                 >= 3     && < 4.6
                , base-unicode-symbols >= 0.1.1 && < 0.3
-               , transformers         >= 0.2   && < 0.3
+               , transformers         >= 0.2   && < 0.4
                , transformers-base    >= 0.4   && < 0.5
                , monad-control        >= 0.3   && < 0.4
                , HUnit                >= 1.2.2 && < 1.3
