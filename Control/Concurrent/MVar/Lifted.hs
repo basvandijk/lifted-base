@@ -131,12 +131,12 @@ withMVar = liftBaseOp ∘ MVar.withMVar
 {-# INLINABLE withMVar #-}
 
 -- | Generalized version of 'MVar.modifyMVar_'.
-modifyMVar_ ∷ (MonadBaseControl IO m, MonadBase IO m) ⇒ MVar α → (α → m α) → m ()
+modifyMVar_ ∷ (MonadBaseControl IO m) ⇒ MVar α → (α → m α) → m ()
 modifyMVar_ mv = modifyMVar mv ∘ (fmap (, ()) ∘)
 {-# INLINABLE modifyMVar_ #-}
 
 -- | Generalized version of 'MVar.modifyMVar'.
-modifyMVar ∷ (MonadBaseControl IO m, MonadBase IO m) ⇒ MVar α → (α → m (α, β)) → m β
+modifyMVar ∷ (MonadBaseControl IO m) ⇒ MVar α → (α → m (α, β)) → m β
 
 #if MIN_VERSION_base(4,3,0)
 modifyMVar mv f = control $ \runInIO -> mask $ \restore → do
