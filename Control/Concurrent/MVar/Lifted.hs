@@ -78,62 +78,62 @@ import Control.Monad.Trans.Control ( MonadBaseControl
 --------------------------------------------------------------------------------
 
 -- | Generalized version of 'MVar.newEmptyMVar'.
-newEmptyMVar ∷ MonadBase IO m => m (MVar a)
+newEmptyMVar :: MonadBase IO m => m (MVar a)
 newEmptyMVar = liftBase MVar.newEmptyMVar
 {-# INLINABLE newEmptyMVar #-}
 
 -- | Generalized version of 'MVar.newMVar'.
-newMVar ∷ MonadBase IO m => a -> m (MVar a)
+newMVar :: MonadBase IO m => a -> m (MVar a)
 newMVar = liftBase . MVar.newMVar
 {-# INLINABLE newMVar #-}
 
 -- | Generalized version of 'MVar.takeMVar'.
-takeMVar ∷ MonadBase IO m => MVar a -> m a
+takeMVar :: MonadBase IO m => MVar a -> m a
 takeMVar = liftBase . MVar.takeMVar
 {-# INLINABLE takeMVar #-}
 
 -- | Generalized version of 'MVar.putMVar'.
-putMVar ∷ MonadBase IO m => MVar a -> a -> m ()
+putMVar :: MonadBase IO m => MVar a -> a -> m ()
 putMVar mv x = liftBase $ MVar.putMVar mv x
 {-# INLINABLE putMVar #-}
 
 -- | Generalized version of 'MVar.readMVar'.
-readMVar ∷ MonadBase IO m => MVar a -> m a
+readMVar :: MonadBase IO m => MVar a -> m a
 readMVar = liftBase . MVar.readMVar
 {-# INLINABLE readMVar #-}
 
 -- | Generalized version of 'MVar.swapMVar'.
-swapMVar ∷ MonadBase IO m => MVar a -> a -> m a
+swapMVar :: MonadBase IO m => MVar a -> a -> m a
 swapMVar mv x = liftBase $ MVar.swapMVar mv x
 {-# INLINABLE swapMVar #-}
 
 -- | Generalized version of 'MVar.tryTakeMVar'.
-tryTakeMVar ∷ MonadBase IO m => MVar a -> m (Maybe a)
+tryTakeMVar :: MonadBase IO m => MVar a -> m (Maybe a)
 tryTakeMVar = liftBase . MVar.tryTakeMVar
 {-# INLINABLE tryTakeMVar #-}
 
 -- | Generalized version of 'MVar.tryPutMVar'.
-tryPutMVar ∷ MonadBase IO m => MVar a -> a -> m Bool
+tryPutMVar :: MonadBase IO m => MVar a -> a -> m Bool
 tryPutMVar mv x = liftBase $ MVar.tryPutMVar mv x
 {-# INLINABLE tryPutMVar #-}
 
 -- | Generalized version of 'MVar.isEmptyMVar'.
-isEmptyMVar ∷ MonadBase IO m => MVar a -> m Bool
+isEmptyMVar :: MonadBase IO m => MVar a -> m Bool
 isEmptyMVar = liftBase . MVar.isEmptyMVar
 {-# INLINABLE isEmptyMVar #-}
 
 -- | Generalized version of 'MVar.withMVar'.
-withMVar ∷ MonadBaseControl IO m => MVar a -> (a -> m b) -> m b
+withMVar :: MonadBaseControl IO m => MVar a -> (a -> m b) -> m b
 withMVar = liftBaseOp . MVar.withMVar
 {-# INLINABLE withMVar #-}
 
 -- | Generalized version of 'MVar.modifyMVar_'.
-modifyMVar_ ∷ (MonadBaseControl IO m) => MVar a -> (a -> m a) -> m ()
+modifyMVar_ :: (MonadBaseControl IO m) => MVar a -> (a -> m a) -> m ()
 modifyMVar_ mv = modifyMVar mv . (fmap (, ()) .)
 {-# INLINABLE modifyMVar_ #-}
 
 -- | Generalized version of 'MVar.modifyMVar'.
-modifyMVar ∷ (MonadBaseControl IO m) => MVar a -> (a -> m (a, b)) -> m b
+modifyMVar :: (MonadBaseControl IO m) => MVar a -> (a -> m (a, b)) -> m b
 
 #if MIN_VERSION_base(4,3,0)
 modifyMVar mv f = control $ \runInIO -> mask $ \restore -> do
@@ -170,6 +170,6 @@ modifyMVar mv f = control $ \runInIO -> block $ do
 --
 -- Note any monadic side effects in @m@ of the \"finalizer\" computation are
 -- discarded.
-addMVarFinalizer ∷ MonadBaseControl IO m => MVar a -> m () -> m ()
+addMVarFinalizer :: MonadBaseControl IO m => MVar a -> m () -> m ()
 addMVarFinalizer = liftBaseDiscard . MVar.addMVarFinalizer
 {-# INLINABLE addMVarFinalizer #-}
