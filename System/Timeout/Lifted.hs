@@ -20,12 +20,10 @@ module System.Timeout.Lifted ( timeout ) where
 -- from base:
 import           Data.Int            ( Int )
 import           Data.Maybe          ( Maybe(Nothing, Just), maybe )
+import           Data.Function       ( (.) )
 import           Control.Monad       ( (>>=), return, liftM )
 import           System.IO           ( IO )
 import qualified System.Timeout as T ( timeout )
-
--- from base-unicode-symbols:
-import Data.Function.Unicode ( (∘) )
 
 -- from monad-control:
 import Control.Monad.Trans.Control ( MonadBaseControl, restoreM, liftBaseWith )
@@ -37,7 +35,7 @@ import Control.Monad.Trans.Control ( MonadBaseControl, restoreM, liftBaseWith )
 -- Note that when the given computation times out any side effects of @m@ are
 -- discarded. When the computation completes within the given time the
 -- side-effects are restored on return.
-timeout ∷ MonadBaseControl IO m ⇒ Int → m α → m (Maybe α)
-timeout t m = liftBaseWith (\runInIO → T.timeout t (runInIO m)) >>=
-                maybe (return Nothing) (liftM Just ∘ restoreM)
+timeout :: MonadBaseControl IO m => Int -> m a -> m (Maybe a)
+timeout t m = liftBaseWith (\runInIO -> T.timeout t (runInIO m)) >>=
+                maybe (return Nothing) (liftM Just . restoreM)
 {-# INLINABLE timeout #-}
