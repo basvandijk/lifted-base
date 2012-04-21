@@ -120,7 +120,7 @@ fork = liftBaseDiscard C.forkIO
 -- Note that, while the forked computation @m ()@ has access to the captured
 -- state, all its side-effects in @m@ are discarded. It is run only for its
 -- side-effects in 'IO'.
-forkWithUnmask ∷ MonadBaseControl IO m ⇒ ((∀ α. m α → m α) → m ()) → m ThreadId
+forkWithUnmask ∷ MonadBaseControl IO m ⇒ ((∀ a. m a → m a) → m ()) → m ThreadId
 forkWithUnmask f = liftBaseWith $ \runInIO →
                      C.forkIOWithUnmask $ \unmask →
                        void $ runInIO $ f $ liftBaseOp_ unmask
@@ -152,7 +152,7 @@ forkOn = liftBaseDiscard ∘ C.forkOn
 -- Note that, while the forked computation @m ()@ has access to the captured
 -- state, all its side-effects in @m@ are discarded. It is run only for its
 -- side-effects in 'IO'.
-forkOnWithUnmask ∷ MonadBaseControl IO m ⇒ Int → ((∀ α. m α → m α) → m ()) → m ThreadId
+forkOnWithUnmask ∷ MonadBaseControl IO m ⇒ Int → ((∀ a. m a → m a) → m ()) → m ThreadId
 forkOnWithUnmask cap f = liftBaseWith $ \runInIO →
                            C.forkOnWithUnmask cap $ \unmask →
                              void $ runInIO $ f $ liftBaseOp_ unmask
@@ -190,12 +190,12 @@ threadWaitWrite = liftBase ∘ C.threadWaitWrite
 {-# INLINABLE threadWaitWrite #-}
 
 -- | Generalized version of 'C.mergeIO'.
-merge ∷ MonadBase IO m ⇒ [α] → [α] → m [α]
+merge ∷ MonadBase IO m ⇒ [a] → [a] → m [a]
 merge xs ys = liftBase $ C.mergeIO xs ys
 {-# INLINABLE merge #-}
 
 -- | Generalized version of 'C.nmergeIO'.
-nmerge ∷ MonadBase IO m ⇒ [[α]] → m [α]
+nmerge ∷ MonadBase IO m ⇒ [[a]] → m [a]
 nmerge = liftBase ∘ C.nmergeIO
 {-# INLINABLE nmerge #-}
 
@@ -214,11 +214,11 @@ isCurrentThreadBound = liftBase C.isCurrentThreadBound
 {-# INLINABLE isCurrentThreadBound #-}
 
 -- | Generalized version of 'C.runInBoundThread'.
-runInBoundThread ∷ MonadBaseControl IO m ⇒ m α → m α
+runInBoundThread ∷ MonadBaseControl IO m ⇒ m a → m a
 runInBoundThread = liftBaseOp_ C.runInBoundThread
 {-# INLINABLE runInBoundThread #-}
 
 -- | Generalized version of 'C.runInUnboundThread'.
-runInUnboundThread ∷ MonadBaseControl IO m ⇒ m α → m α
+runInUnboundThread ∷ MonadBaseControl IO m ⇒ m a → m a
 runInUnboundThread = liftBaseOp_ C.runInUnboundThread
 {-# INLINABLE runInUnboundThread #-}

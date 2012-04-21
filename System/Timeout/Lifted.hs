@@ -37,7 +37,7 @@ import Control.Monad.Trans.Control ( MonadBaseControl, restoreM, liftBaseWith )
 -- Note that when the given computation times out any side effects of @m@ are
 -- discarded. When the computation completes within the given time the
 -- side-effects are restored on return.
-timeout ∷ MonadBaseControl IO m ⇒ Int → m α → m (Maybe α)
+timeout ∷ MonadBaseControl IO m ⇒ Int → m a → m (Maybe a)
 timeout t m = liftBaseWith (\runInIO → T.timeout t (runInIO m)) >>=
                 maybe (return Nothing) (liftM Just ∘ restoreM)
 {-# INLINABLE timeout #-}
