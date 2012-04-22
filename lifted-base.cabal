@@ -1,5 +1,5 @@
 Name:                lifted-base
-Version:             0.1.0.4
+Version:             0.1.0.5
 Synopsis:            lifted IO operations from the base library
 License:             BSD3
 License-file:        LICENSE
@@ -22,9 +22,6 @@ Description:         @lifted-base@ exports IO operations from the base library l
                      by Anders Kaseorg The tests can be performed using @cabal test@.
 
 extra-source-files:  README.markdown, NEWS
-
--- TODO: Remove when http://hackage.haskell.org/trac/hackage/ticket/792 is fixed:
-extra-source-files:  test.hs
 
 extra-source-files: include/inlinable.h
 
@@ -83,8 +80,8 @@ benchmark bench-lifted-base
   ghc-options:    -O2
 
   build-depends: lifted-base
-               , base                 	   >= 3       && < 4.6
-               , transformers         	   >= 0.2     && < 0.4
-               , criterion            	   >= 0.5     && < 0.7
-               , monad-control        	   >= 0.3     && < 0.4
-               , monad-peel           	   >= 0.1     && < 0.2
+               , base          >= 3   && < 4.6
+               , transformers  >= 0.2 && < 0.4
+               , criterion     >= 0.5 && < 0.7
+               , monad-control >= 0.3 && < 0.4
+               , monad-peel    >= 0.1 && < 0.2
