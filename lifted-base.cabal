@@ -55,11 +55,12 @@ Library
 --------------------------------------------------------------------------------
 
 test-suite test-lifted-base
-  type:    exitcode-stdio-1.0
-  main-is: test.hs
+  type:           exitcode-stdio-1.0
+  main-is:        test.hs
+  hs-source-dirs: test
 
-  build-depends: base                 >= 3     && < 4.6
-               , base-unicode-symbols >= 0.1.1 && < 0.3
+  build-depends: lifted-base
+               , base                 >= 3     && < 4.6
                , transformers         >= 0.2   && < 0.4
                , transformers-base    >= 0.4   && < 0.5
                , monad-control        >= 0.3   && < 0.4
@@ -73,3 +74,17 @@ test-suite test-lifted-base
   ghc-options: -Wall
 
 --------------------------------------------------------------------------------
+
+benchmark bench-lifted-base
+  type:           exitcode-stdio-1.0
+  main-is:        bench.hs
+  hs-source-dirs: bench
+
+  ghc-options:    -O2
+
+  build-depends: lifted-base
+               , base                 	   >= 3       && < 4.6
+               , transformers         	   >= 0.2     && < 0.4
+               , criterion            	   >= 0.5     && < 0.7
+               , monad-control        	   >= 0.3     && < 0.4
+               , monad-peel           	   >= 0.1     && < 0.2

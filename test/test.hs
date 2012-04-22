@@ -9,6 +9,7 @@ import Data.Typeable (Typeable)
 -- from transformers-base:
 import Control.Monad.Base (liftBase)
 
+-- from transformers:
 import Control.Monad.Trans.Identity
 import Control.Monad.Trans.List
 import Control.Monad.Trans.Maybe
