@@ -37,6 +37,7 @@ Library
   Exposed-modules: Control.Exception.Lifted
                    Control.Concurrent.MVar.Lifted
                    Control.Concurrent.Chan.Lifted
+                   Control.Concurrent.QSem.Lifted
                    Control.Concurrent.Lifted
                    System.Timeout.Lifted
 
