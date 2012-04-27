@@ -46,7 +46,7 @@ module Control.Concurrent.Lifted
     , module Control.Concurrent.MVar.Lifted
     , module Control.Concurrent.Chan.Lifted
     , module Control.Concurrent.QSem.Lifted
-    -- TODO: , module Control.Concurrent.QSemN.Lifted
+    , module Control.Concurrent.QSemN.Lifted
     -- TODO: , module Control.Concurrent.SampleVar.Lifted
 
       -- * Merging of streams
@@ -94,6 +94,7 @@ import Control.Monad               ( void )
 import Control.Concurrent.MVar.Lifted
 import Control.Concurrent.Chan.Lifted
 import Control.Concurrent.QSem.Lifted
+import Control.Concurrent.QSemN.Lifted
 
 #include "inlinable.h"
 
