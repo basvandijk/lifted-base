@@ -44,7 +44,7 @@ module Control.Concurrent.Lifted
 
       -- * Communication abstractions
     , module Control.Concurrent.MVar.Lifted
-    -- TODO: , module Control.Concurrent.Chan.Lifted
+    , module Control.Concurrent.Chan.Lifted
     -- TODO: , module Control.Concurrent.QSem.Lifted
     -- TODO: , module Control.Concurrent.QSemN.Lifted
     -- TODO: , module Control.Concurrent.SampleVar.Lifted
@@ -92,6 +92,7 @@ import Control.Monad               ( void )
 
 -- from lifted-base (this package):
 import Control.Concurrent.MVar.Lifted
+import Control.Concurrent.Chan.Lifted
 
 #include "inlinable.h"
 
