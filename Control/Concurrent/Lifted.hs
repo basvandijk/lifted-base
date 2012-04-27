@@ -44,10 +44,10 @@ module Control.Concurrent.Lifted
 
       -- * Communication abstractions
     , module Control.Concurrent.MVar.Lifted
-    -- TODO: , module Control.Concurrent.Chan.Lifted
-    -- TODO: , module Control.Concurrent.QSem.Lifted
-    -- TODO: , module Control.Concurrent.QSemN.Lifted
-    -- TODO: , module Control.Concurrent.SampleVar.Lifted
+    , module Control.Concurrent.Chan.Lifted
+    , module Control.Concurrent.QSem.Lifted
+    , module Control.Concurrent.QSemN.Lifted
+    , module Control.Concurrent.SampleVar.Lifted
 
       -- * Merging of streams
     , merge
@@ -92,6 +92,10 @@ import Control.Monad               ( void )
 
 -- from lifted-base (this package):
 import Control.Concurrent.MVar.Lifted
+import Control.Concurrent.Chan.Lifted
+import Control.Concurrent.QSem.Lifted
+import Control.Concurrent.QSemN.Lifted
+import Control.Concurrent.SampleVar.Lifted
 
 #include "inlinable.h"
 
