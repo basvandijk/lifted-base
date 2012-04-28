@@ -11,8 +11,8 @@ License     :  BSD-style
 Maintainer  :  Bas van Dijk <v.dijk.bas@gmail.com>
 Stability   :  experimental
 
-This is a wrapped version of 'Control.Concurrent.Chan' with types
-generalised from @IO@ to all monads in 'MonadBase'.
+This is a wrapped version of "Control.Concurrent.Chan" with types
+generalised from 'IO' to all monads in 'MonadBase'.
 
 'Chan.unGetChan' and 'Chan.isEmptyChan' are deprecated in @base@, therefore
 they are not included here. Use 'Control.Concurrent.STM.TVar' instead.

@@ -11,8 +11,8 @@ License     :  BSD-style
 Maintainer  :  Bas van Dijk <v.dijk.bas@gmail.com>
 Stability   :  experimental
 
-This is a wrapped version of 'Control.Concurrent.QSem' with types
-generalised from @IO@ to all monads in 'MonadBase'.
+This is a wrapped version of "Control.Concurrent.QSem" with types
+generalised from 'IO' to all monads in 'MonadBase'.
 -}
 
 module Control.Concurrent.QSem.Lifted

@@ -18,8 +18,8 @@ Maintainer  :  Bas van Dijk <v.dijk.bas@gmail.com>
 Stability   :  experimental
 Portability :  non-portable (extended exceptions)
 
-This is a wrapped version of @Control.Exception@ with types generalized
-from @IO@ to all monads in either 'MonadBase' or 'MonadBaseControl'.
+This is a wrapped version of "Control.Exception" with types generalized
+from 'IO' to all monads in either 'MonadBase' or 'MonadBaseControl'.
 -}
 
 module Control.Exception.Lifted
