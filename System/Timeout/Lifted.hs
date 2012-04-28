@@ -1,5 +1,9 @@
 {-# LANGUAGE CPP, UnicodeSyntax, NoImplicitPrelude, FlexibleContexts #-}
 
+#if __GLASGOW_HASKELL__ >= 702
+{-# LANGUAGE Trustworthy #-}
+#endif
+
 -------------------------------------------------------------------------------
 -- |
 -- Module      :  System.Timeout.Lifted

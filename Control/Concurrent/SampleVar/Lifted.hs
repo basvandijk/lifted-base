@@ -3,6 +3,10 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE FlexibleContexts #-}
 
+#if __GLASGOW_HASKELL__ >= 702
+{-# LANGUAGE Trustworthy #-}
+#endif
+
 {- |
 Module      :  Control.Concurrent.SampleVar.Lifted
 Copyright   :  Liyang HU, Bas van Dijk
