@@ -1,7 +1,9 @@
-{-# LANGUAGE DeriveDataTypeable, FlexibleContexts #-}
+{-# LANGUAGE CPP, DeriveDataTypeable, FlexibleContexts #-}
 
 -- from base:
+#if !MIN_VERSION_base(4,6,0)
 import Prelude hiding (catch)
+#endif
 import Data.IORef
 import Data.Maybe
 import Data.Typeable (Typeable)
