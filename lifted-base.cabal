@@ -41,6 +41,7 @@ Library
                    Control.Concurrent.QSemN.Lifted
                    Control.Concurrent.SampleVar.Lifted
                    Control.Concurrent.Lifted
+                   Data.IORef.Lifted
                    System.Timeout.Lifted
 
   Build-depends: base                 >= 3     && < 4.7
