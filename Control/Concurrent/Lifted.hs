@@ -49,13 +49,17 @@ module Control.Concurrent.Lifted
       -- * Communication abstractions
     , module Control.Concurrent.MVar.Lifted
     , module Control.Concurrent.Chan.Lifted
+#if !MIN_VERSION_base(4,6,0)
     , module Control.Concurrent.QSem.Lifted
     , module Control.Concurrent.QSemN.Lifted
     , module Control.Concurrent.SampleVar.Lifted
+#endif
 
+#if !MIN_VERSION_base(4,6,0)
       -- * Merging of streams
     , merge
     , nmerge
+#endif
 
       -- * Bound Threads
     , forkOS
@@ -97,9 +101,11 @@ import Control.Monad               ( void )
 -- from lifted-base (this package):
 import Control.Concurrent.MVar.Lifted
 import Control.Concurrent.Chan.Lifted
+#if !MIN_VERSION_base(4,6,0)
 import Control.Concurrent.QSem.Lifted
 import Control.Concurrent.QSemN.Lifted
 import Control.Concurrent.SampleVar.Lifted
+#endif
 
 #include "inlinable.h"
 
@@ -197,6 +203,7 @@ threadWaitWrite ∷ MonadBase IO m ⇒ Fd → m ()
 threadWaitWrite = liftBase ∘ C.threadWaitWrite
 {-# INLINABLE threadWaitWrite #-}
 
+#if !MIN_VERSION_base(4,6,0)
 -- | Generalized version of 'C.mergeIO'.
 merge ∷ MonadBase IO m ⇒ [a] → [a] → m [a]
 merge xs ys = liftBase $ C.mergeIO xs ys
@@ -206,6 +213,7 @@ merge xs ys = liftBase $ C.mergeIO xs ys
 nmerge ∷ MonadBase IO m ⇒ [[a]] → m [a]
 nmerge = liftBase ∘ C.nmergeIO
 {-# INLINABLE nmerge #-}
+#endif
 
 -- | Generalized version of 'C.forkOS'.
 --
