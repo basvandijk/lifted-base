@@ -26,6 +26,9 @@ module Control.Concurrent.Lifted
 #if MIN_VERSION_base(4,4,0)
     , forkWithUnmask
 #endif
+#if MIN_VERSION_base(4,6,0)
+    , forkFinally
+#endif
     , killThread
     , throwTo
 
@@ -34,6 +37,9 @@ module Control.Concurrent.Lifted
     , forkOn
     , forkOnWithUnmask
     , getNumCapabilities
+#if MIN_VERSION_base(4,6,0)
+    , setNumCapabilities
+#endif
     , threadCapability
 #endif
 
@@ -62,10 +68,16 @@ module Control.Concurrent.Lifted
 #endif
 
       -- * Bound Threads
+    , C.rtsSupportsBoundThreads
     , forkOS
     , isCurrentThreadBound
     , runInBoundThread
     , runInUnboundThread
+
+#if MIN_VERSION_base(4,6,0)
+      -- * Weak references to ThreadIds
+    , mkWeakThreadId
+#endif
     ) where
 
 
@@ -79,7 +91,11 @@ import Data.Int           ( Int )
 import Data.Function      ( ($) )
 import System.IO          ( IO )
 import System.Posix.Types ( Fd )
-import Control.Exception  ( Exception )
+#if MIN_VERSION_base(4,6,0)
+import Control.Monad      ( (>>=) )
+import Data.Either        ( Either )
+import System.Mem.Weak    ( Weak )
+#endif
 
 import           Control.Concurrent ( ThreadId )
 import qualified Control.Concurrent as C
@@ -106,7 +122,11 @@ import Control.Concurrent.QSem.Lifted
 import Control.Concurrent.QSemN.Lifted
 import Control.Concurrent.SampleVar.Lifted
 #endif
-
+import Control.Exception.Lifted ( throwTo
+#if MIN_VERSION_base(4,6,0)
+                                , SomeException, try, mask
+#endif
+                                )
 #include "inlinable.h"
 
 
@@ -138,18 +158,28 @@ forkWithUnmask ∷ MonadBaseControl IO m ⇒ ((∀ a. m a → m a) → m ()) →
 forkWithUnmask f = liftBaseWith $ \runInIO →
                      C.forkIOWithUnmask $ \unmask →
                        void $ runInIO $ f $ liftBaseOp_ unmask
-{-# INLINABLE  forkWithUnmask #-}
+{-# INLINABLE forkWithUnmask #-}
+#endif
+
+#if MIN_VERSION_base(4,6,0)
+-- | Generalized version of 'C.forkFinally'.
+--
+-- Note that in @forkFinally action and_then@, while the forked
+-- @action@ and the @and_then@ function have access to the captured
+-- state, all their side-effects in @m@ are discarded. They're run
+-- only for their side-effects in 'IO'.
+forkFinally ∷ MonadBaseControl IO m
+            ⇒ m a → (Either SomeException a → m ()) → m ThreadId
+forkFinally action and_then =
+    mask $ \restore ->
+      fork $ try (restore action) >>= and_then
+{-# INLINABLE forkFinally #-}
 #endif
 
 -- | Generalized version of 'C.killThread'.
 killThread ∷ MonadBase IO m ⇒ ThreadId → m ()
 killThread = liftBase ∘ C.killThread
 {-# INLINABLE  killThread #-}
-
--- | Generalized version of 'C.throwTo'.
-throwTo ∷ (MonadBase IO m, Exception e) ⇒ ThreadId → e → m ()
-throwTo tid e = liftBase $ C.throwTo tid e
-{-# INLINABLE throwTo #-}
 
 #if MIN_VERSION_base(4,4,0)
 -- | Generalized version of 'C.forkOn'.
@@ -176,6 +206,13 @@ forkOnWithUnmask cap f = liftBaseWith $ \runInIO →
 getNumCapabilities ∷ MonadBase IO m ⇒ m Int
 getNumCapabilities = liftBase C.getNumCapabilities
 {-# INLINABLE getNumCapabilities #-}
+
+#if MIN_VERSION_base(4,6,0)
+-- | Generalized version of 'C.setNumCapabilities'.
+setNumCapabilities ∷ MonadBase IO m ⇒ Int → m ()
+setNumCapabilities = liftBase ∘ C.setNumCapabilities
+{-# INLINABLE setNumCapabilities #-}
+#endif
 
 -- | Generalized version of 'C.threadCapability'.
 threadCapability ∷ MonadBase IO m ⇒ ThreadId → m (Int, Bool)
@@ -238,3 +275,10 @@ runInBoundThread = liftBaseOp_ C.runInBoundThread
 runInUnboundThread ∷ MonadBaseControl IO m ⇒ m a → m a
 runInUnboundThread = liftBaseOp_ C.runInUnboundThread
 {-# INLINABLE runInUnboundThread #-}
+
+#if MIN_VERSION_base(4,6,0)
+-- | Generalized versio  of 'C.mkWeakThreadId'.
+mkWeakThreadId ∷ MonadBase IO m ⇒ ThreadId → m (Weak ThreadId)
+mkWeakThreadId = liftBase ∘ C.mkWeakThreadId
+{-# INLINABLE mkWeakThreadId #-}
+#endif

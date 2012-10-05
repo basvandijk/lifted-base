@@ -35,7 +35,15 @@ module Control.Concurrent.MVar.Lifted
     , withMVar
     , modifyMVar_
     , modifyMVar
+#if MIN_VERSION_base(4,6,0)
+    , modifyMVarMasked_
+    , modifyMVarMasked
+#endif
+#if MIN_VERSION_base(4,6,0)
+    , mkWeakMVar
+#else
     , addMVarFinalizer
+#endif
     ) where
 
 
@@ -60,6 +68,9 @@ import Control.Exception ( onException
                          , block, unblock
 #endif
                          )
+#if MIN_VERSION_base(4,6,0)
+import System.Mem.Weak ( Weak )
+#endif
 
 #if __GLASGOW_HASKELL__ < 700
 import Control.Monad ( (>>=), (>>), fail )
@@ -143,7 +154,7 @@ modifyMVar_ mv = modifyMVar mv ∘ (fmap (, ()) ∘)
 modifyMVar ∷ (MonadBaseControl IO m) ⇒ MVar a → (a → m (a, b)) → m b
 
 #if MIN_VERSION_base(4,3,0)
-modifyMVar mv f = control $ \runInIO -> mask $ \restore → do
+modifyMVar mv f = control $ \runInIO → mask $ \restore → do
     aborted ← newIORef True
     let f' x = do
         (x', a) ← f x
@@ -173,6 +184,39 @@ modifyMVar mv f = control $ \runInIO -> block $ do
 #endif
 {-# INLINABLE modifyMVar #-}
 
+#if MIN_VERSION_base(4,6,0)
+-- | Generalized version of 'MVar.modifyMVarMasked_'.
+modifyMVarMasked_ ∷ (MonadBaseControl IO m) ⇒ MVar a → (a → m a) → m ()
+modifyMVarMasked_ mv = modifyMVarMasked mv ∘ (fmap (, ()) ∘)
+{-# INLINABLE modifyMVarMasked_ #-}
+
+-- | Generalized version of 'MVar.modifyMVarMasked'.
+modifyMVarMasked ∷ (MonadBaseControl IO m) ⇒ MVar a → (a → m (a, b)) → m b
+modifyMVarMasked mv f = control $ \runInIO → mask_ $ do
+    aborted ← newIORef True
+    let f' x = do
+        (x', a) ← f x
+        liftBase $ do
+          writeIORef aborted False
+          MVar.putMVar mv x'
+        return a
+    x ← MVar.takeMVar mv
+    stM ← runInIO (f' x) `onException` MVar.putMVar mv x
+    abort ← readIORef aborted
+    when abort $ MVar.putMVar mv x
+    return stM
+{-# INLINABLE modifyMVarMasked #-}
+#endif
+
+#if MIN_VERSION_base(4,6,0)
+-- | Generalized version of 'MVar.mkWeakMVar'.
+--
+-- Note any monadic side effects in @m@ of the \"finalizer\" computation are
+-- discarded.
+mkWeakMVar ∷ MonadBaseControl IO m ⇒ MVar a → m () → m (Weak (MVar a))
+mkWeakMVar = liftBaseDiscard ∘ MVar.mkWeakMVar
+{-# INLINABLE mkWeakMVar #-}
+#else
 -- | Generalized version of 'MVar.addMVarFinalizer'.
 --
 -- Note any monadic side effects in @m@ of the \"finalizer\" computation are
@@ -180,3 +224,4 @@ modifyMVar mv f = control $ \runInIO -> block $ do
 addMVarFinalizer ∷ MonadBaseControl IO m ⇒ MVar a → m () → m ()
 addMVarFinalizer = liftBaseDiscard ∘ MVar.addMVarFinalizer
 {-# INLINABLE addMVarFinalizer #-}
+#endif

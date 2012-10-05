@@ -30,7 +30,7 @@ module Control.Exception.Lifted
     ( module Control.Exception
 
       -- * Throwing exceptions
-    , throwIO, ioError
+    , throwIO, ioError, throwTo
 
       -- * Catching exceptions
       -- ** The @catch@ functions
@@ -53,6 +53,9 @@ module Control.Exception.Lifted
     , mask, mask_
     , uninterruptibleMask, uninterruptibleMask_
     , getMaskingState
+#if MIN_VERSION_base(4,4,0)
+    , allowInterrupt
+#endif
 #else
     , block, unblock
 #endif
@@ -85,7 +88,7 @@ import Control.Monad   ( fail )
 #endif
 
 import Control.Exception hiding
-    ( throwIO, ioError
+    ( throwIO, ioError, throwTo
     , catch, catches, Handler(..), catchJust
     , handle, handleJust
     , try, tryJust
@@ -94,6 +97,9 @@ import Control.Exception hiding
     , mask, mask_
     , uninterruptibleMask, uninterruptibleMask_
     , getMaskingState
+#if MIN_VERSION_base(4,4,0)
+    , allowInterrupt
+#endif
 #else
     , block, unblock
 #endif
@@ -103,7 +109,9 @@ import Control.Exception hiding
     , bracket, bracket_, bracketOnError
     , finally, onException
     )
-import qualified Control.Exception as E
+import qualified Control.Exception  as E
+import qualified Control.Concurrent as C
+import           Control.Concurrent ( ThreadId )
 
 #if !MIN_VERSION_base(4,4,0)
 import Data.Bool ( Bool )
@@ -140,6 +148,10 @@ ioError ∷ MonadBase IO m ⇒ IOError → m a
 ioError = liftBase ∘ E.ioError
 {-# INLINABLE ioError #-}
 
+-- | Generalized version of 'C.throwTo'.
+throwTo ∷ (MonadBase IO m, Exception e) ⇒ ThreadId → e → m ()
+throwTo tid e = liftBase $ C.throwTo tid e
+{-# INLINABLE throwTo #-}
 
 --------------------------------------------------------------------------------
 -- * Catching exceptions
@@ -263,6 +275,13 @@ uninterruptibleMask_ = liftBaseOp_ E.uninterruptibleMask_
 getMaskingState ∷ MonadBase IO m ⇒ m MaskingState
 getMaskingState = liftBase E.getMaskingState
 {-# INLINABLE getMaskingState #-}
+
+#if MIN_VERSION_base(4,4,0)
+-- |Generalized version of 'E.allowInterrupt'.
+allowInterrupt ∷ MonadBase IO m ⇒ m ()
+allowInterrupt = liftBase E.allowInterrupt
+{-# INLINABLE allowInterrupt #-}
+#endif
 #else
 -- |Generalized version of 'E.block'.
 block ∷ MonadBaseControl IO m ⇒ m a → m a
