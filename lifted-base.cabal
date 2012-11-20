@@ -91,4 +91,3 @@ benchmark bench-lifted-base
                , transformers  >= 0.2 && < 0.4
                , criterion     >= 0.5 && < 0.7
                , monad-control >= 0.3 && < 0.4
-               , monad-peel    >= 0.1 && < 0.2
