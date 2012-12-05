@@ -158,6 +158,9 @@ throwTo tid e = liftBase $ C.throwTo tid e
 --------------------------------------------------------------------------------
 
 -- |Generalized version of 'E.catch'.
+--
+-- Note, when the given computation throws an exception any monadic
+-- side effects in @m@ will be discarded.
 catch ∷ (MonadBaseControl IO m, Exception e)
       ⇒ m a       -- ^ The computation to run
       → (e → m a) -- ^ Handler to invoke if an exception is raised
@@ -168,6 +171,9 @@ catch a handler = control $ \runInIO →
 {-# INLINABLE catch #-}
 
 -- |Generalized version of 'E.catches'.
+--
+-- Note, when the given computation throws an exception any monadic
+-- side effects in @m@ will be discarded.
 catches ∷ MonadBaseControl IO m ⇒ m a → [Handler m a] → m a
 catches a handlers = control $ \runInIO →
                        E.catches (runInIO a)
@@ -180,6 +186,9 @@ catches a handlers = control $ \runInIO →
 data Handler m a = ∀ e. Exception e ⇒ Handler (e → m a)
 
 -- |Generalized version of 'E.catchJust'.
+--
+-- Note, when the given computation throws an exception any monadic
+-- side effects in @m@ will be discarded.
 catchJust ∷ (MonadBaseControl IO m, Exception e)
           ⇒ (e → Maybe b) -- ^ Predicate to select exceptions
           → m a           -- ^ Computation to run
@@ -197,6 +206,9 @@ catchJust p a handler = control $ \runInIO →
 --------------------------------------------------------------------------------
 
 -- |Generalized version of 'E.handle'.
+--
+-- Note, when the given computation throws an exception any monadic
+-- side effects in @m@ will be discarded.
 handle ∷ (MonadBaseControl IO m, Exception e) ⇒ (e → m a) → m a → m a
 handle handler a = control $ \runInIO →
                      E.handle (\e → runInIO (handler e))
@@ -204,6 +216,9 @@ handle handler a = control $ \runInIO →
 {-# INLINABLE handle #-}
 
 -- |Generalized version of 'E.handleJust'.
+--
+-- Note, when the given computation throws an exception any monadic
+-- side effects in @m@ will be discarded.
 handleJust ∷ (MonadBaseControl IO m, Exception e)
            ⇒ (e → Maybe b) → (b → m a) → m a → m a
 handleJust p handler a = control $ \runInIO →
@@ -220,11 +235,17 @@ sequenceEither = either (return ∘ Left) (liftM Right ∘ restoreM)
 {-# INLINE sequenceEither #-}
 
 -- |Generalized version of 'E.try'.
+--
+-- Note, when the given computation throws an exception any monadic
+-- side effects in @m@ will be discarded.
 try ∷ (MonadBaseControl IO m, Exception e) ⇒ m a → m (Either e a)
 try m = liftBaseWith (\runInIO → E.try (runInIO m)) >>= sequenceEither
 {-# INLINABLE try #-}
 
 -- |Generalized version of 'E.tryJust'.
+--
+-- Note, when the given computation throws an exception any monadic
+-- side effects in @m@ will be discarded.
 tryJust ∷ (MonadBaseControl IO m, Exception e) ⇒ (e → Maybe b) → m a → m (Either b a)
 tryJust p m = liftBaseWith (\runInIO → E.tryJust p (runInIO m)) >>= sequenceEither
 {-# INLINABLE tryJust #-}
@@ -308,9 +329,21 @@ blocked = liftBase E.blocked
 -- * Brackets
 --------------------------------------------------------------------------------
 
--- |Generalized version of 'E.bracket'.  Note, any monadic side
--- effects in @m@ of the \"release\" computation will be discarded; it
--- is run only for its side effects in @IO@.
+-- |Generalized version of 'E.bracket'.
+--
+-- Note:
+--
+-- * When the \"acquire\" or \"release\" computations throw exceptions
+--   any monadic side effects in @m@ will be discarded.
+--
+-- * When the \"in-between\" computation throws an exception any
+--   monadic side effects in @m@ produced by that computation will be
+--   discarded but the side effects of the \"acquire\" or \"release\"
+--   computations will be retained.
+--
+-- * Also, any monadic side effects in @m@ of the \"release\"
+--   computation will be discarded; it is run only for its side
+--   effects in @IO@.
 --
 -- Note that when your @acquire@ and @release@ computations are of type 'IO'
 -- it will be more efficient to write:
@@ -327,11 +360,12 @@ bracket before after thing = control $ \runInIO →
                                          (\st → runInIO $ restoreM st >>= thing)
 {-# INLINABLE bracket #-}
 
--- |Generalized version of 'E.bracket_'.  Note, any monadic side
--- effects in @m@ of /both/ the \"acquire\" and \"release\"
--- computations will be discarded.  To keep the monadic side effects
--- of the \"acquire\" computation, use 'bracket' with constant
--- functions instead.
+-- |Generalized version of 'E.bracket_'.
+--
+-- Note any monadic side effects in @m@ of /both/ the \"acquire\" and
+-- \"release\" computations will be discarded. To keep the monadic
+-- side effects of the \"acquire\" computation, use 'bracket' with
+-- constant functions instead.
 --
 -- Note that when your @acquire@ and @release@ computations are of type 'IO'
 -- it will be more efficient to write:
@@ -348,11 +382,24 @@ bracket_ before after thing = control $ \runInIO →
                                            (runInIO thing)
 {-# INLINABLE bracket_ #-}
 
--- |Generalized version of 'E.bracketOnError'.  Note, any monadic side
--- effects in @m@ of the \"release\" computation will be discarded.
+-- |Generalized version of 'E.bracketOnError'.
 --
--- Note that when your @acquire@ and @release@ computations are of type 'IO'
--- it will be more efficient to write:
+-- Note:
+--
+-- * When the \"acquire\" or \"release\" computations throw exceptions
+--   any monadic side effects in @m@ will be discarded.
+--
+-- * When the \"in-between\" computation throws an exception any
+--   monadic side effects in @m@ produced by that computation will be
+--   discarded but the side effects of the \"acquire\" computation
+--   will be retained.
+--
+-- * Also, any monadic side effects in @m@ of the \"release\"
+--   computation will be discarded; it is run only for its side
+--   effects in @IO@.
+--
+-- Note that when your @acquire@ and @release@ computations are of
+-- type 'IO' it will be more efficient to write:
 --
 -- @'liftBaseOp' ('E.bracketOnError' acquire release)@
 bracketOnError ∷ MonadBaseControl IO m
@@ -372,8 +419,10 @@ bracketOnError before after thing =
 -- * Utilities
 --------------------------------------------------------------------------------
 
--- |Generalized version of 'E.finally'.  Note, any monadic side
--- effects in @m@ of the \"afterward\" computation will be discarded.
+-- |Generalized version of 'E.finally'.
+--
+-- Note, any monadic side effects in @m@ of the \"afterward\"
+-- computation will be discarded.
 finally ∷ MonadBaseControl IO m
         ⇒ m a -- ^ computation to run first
         → m b -- ^ computation to run afterward (even if an exception was raised)
@@ -383,8 +432,10 @@ finally a sequel = control $ \runInIO →
                                (runInIO sequel)
 {-# INLINABLE finally #-}
 
--- |Generalized version of 'E.onException'.  Note, any monadic side
--- effects in @m@ of the \"afterward\" computation will be discarded.
+-- |Generalized version of 'E.onException'.
+--
+-- Note, any monadic side effects in @m@ of the \"afterward\"
+-- computation will be discarded.
 onException ∷ MonadBaseControl IO m ⇒ m a → m b → m a
 onException m what = control $ \runInIO →
                        E.onException (runInIO m)
