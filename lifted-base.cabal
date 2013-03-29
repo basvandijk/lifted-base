@@ -1,5 +1,5 @@
 Name:                lifted-base
-Version:             0.2.0.2
+Version:             0.2.0.3
 Synopsis:            lifted IO operations from the base library
 License:             BSD3
 License-file:        LICENSE
@@ -10,7 +10,7 @@ Homepage:            https://github.com/basvandijk/lifted-base
 Bug-reports:         https://github.com/basvandijk/lifted-base/issues
 Category:            Control
 Build-type:          Custom
-Cabal-version:       >= 1.9.2
+Cabal-version:       >= 1.8
 Description:         @lifted-base@ exports IO operations from the base library lifted to
                      any instance of 'MonadBase' or 'MonadBaseControl'.
                      .
