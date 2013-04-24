@@ -3,6 +3,7 @@
            , NoImplicitPrelude
            , ExistentialQuantification
            , FlexibleContexts
+           , ImpredicativeTypes
   #-}
 
 #if MIN_VERSION_base(4,3,0)
