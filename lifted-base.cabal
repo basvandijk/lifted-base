@@ -1,5 +1,5 @@
 Name:                lifted-base
-Version:             0.2.0.4
+Version:             0.2.0.5
 Synopsis:            lifted IO operations from the base library
 License:             BSD3
 License-file:        LICENSE
@@ -89,6 +89,6 @@ benchmark bench-lifted-base
   build-depends: lifted-base
                , base          >= 3   && < 5
                , transformers  >= 0.2 && < 0.4
-               , criterion     >= 0.5 && < 0.7
+               , criterion     >= 0.5 && < 0.9
                , monad-control >= 0.3 && < 0.4
                , monad-peel    >= 0.1 && < 0.2
