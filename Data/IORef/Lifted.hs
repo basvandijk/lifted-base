@@ -31,6 +31,7 @@ module Data.IORef.Lifted
     , atomicModifyIORef
 #if MIN_VERSION_base(4,6,0)
     , atomicModifyIORef'
+    , atomicWriteIORef
 #endif
     , mkWeakIORef
     ) where
@@ -95,6 +96,10 @@ modifyIORef' r = liftBase ∘ R.modifyIORef' r
 atomicModifyIORef' ∷ MonadBase IO m ⇒ IORef a → (a → (a, b)) → m b
 atomicModifyIORef' r = liftBase ∘ R.atomicModifyIORef' r
 {-# INLINABLE atomicModifyIORef' #-}
+
+-- | Generalized version of 'R.atomicWriteIORef'.
+atomicWriteIORef ∷ MonadBase IO m ⇒ IORef a → a → m ()
+atomicWriteIORef r = liftBase ∘ R.atomicWriteIORef r
 #endif
 
 -- | Generalized version of 'R.mkWeakIORef'.
