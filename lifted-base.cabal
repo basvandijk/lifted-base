@@ -39,6 +39,7 @@ Library
                    Control.Concurrent.Chan.Lifted
                    Control.Concurrent.Lifted
                    Data.IORef.Lifted
+                   Foreign.Marshal.Utils.Lifted
                    System.Timeout.Lifted
   if impl(ghc < 7.6)
     Exposed-modules:
