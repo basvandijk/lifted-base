@@ -39,8 +39,8 @@ import Control.Monad.Trans.Control ( MonadBaseControl
 -- * When the \"f\" computations throw exceptions
 --   any monadic side effects in @m@ will be discarded.
 with ∷ (MonadBaseControl IO m, F.Storable a)
-     ⇒ a       -- ^ computation to run first (\"acquire resource\")
-     → (F.Ptr a → m b) -- ^ computation to run last (\"release resource\")
+     ⇒ a       -- ^ value to be poked
+     → (F.Ptr a → m b) -- ^ computation to run
      → m b
 with val = liftBaseOp (F.with val)
 {-# INLINEABLE with #-}
