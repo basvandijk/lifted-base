@@ -3,8 +3,7 @@
            , NoImplicitPrelude
            , ExistentialQuantification
            , FlexibleContexts
-           , ImpredicativeTypes
-  #-}
+           , ImpredicativeTypes #-}
 
 #if MIN_VERSION_base(4,3,0)
 {-# LANGUAGE RankNTypes #-} -- for mask
