@@ -79,7 +79,7 @@ module Control.Exception.Lifted
 import Data.Function   ( ($) )
 import Data.Either     ( Either(Left, Right), either )
 import Data.Maybe      ( Maybe )
-import Control.Monad   ( Monad, (>>=), return, liftM )
+import Control.Monad   ( (>>=), return, liftM )
 import System.IO.Error ( IOError )
 import System.IO       ( IO )
 
