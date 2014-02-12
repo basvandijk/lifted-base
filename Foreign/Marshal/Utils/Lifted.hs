@@ -25,8 +25,12 @@ module Foreign.Marshal.Utils.Lifted
   ( with
   ) where
 
+-- from base:
 import qualified Foreign as F
 import System.IO     ( IO )
+
+-- from base-unicode-symbols:
+import Data.Function.Unicode ( (∘) )
 
 -- from monad-control:
 import Control.Monad.Trans.Control ( MonadBaseControl
@@ -34,13 +38,11 @@ import Control.Monad.Trans.Control ( MonadBaseControl
 
 -- |Generalized version of 'F.with'.
 --
--- Note:
---
--- * When the \"f\" computations throw exceptions
---   any monadic side effects in @m@ will be discarded.
+-- Note, when the given function throws an exception any monadic side
+-- effects in @m@ will be discarded.
 with ∷ (MonadBaseControl IO m, F.Storable a)
      ⇒ a       -- ^ value to be poked
      → (F.Ptr a → m b) -- ^ computation to run
      → m b
-with val = liftBaseOp (F.with val)
+with = liftBaseOp ∘ F.with
 {-# INLINEABLE with #-}
