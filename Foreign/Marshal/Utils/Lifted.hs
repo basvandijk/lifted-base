@@ -1,8 +1,4 @@
-{-# LANGUAGE CPP
-           , FlexibleContexts
-           , UnicodeSyntax
-           , NoImplicitPrelude
-  #-}
+{-# LANGUAGE CPP, FlexibleContexts, UnicodeSyntax, NoImplicitPrelude #-}
 
 #if __GLASGOW_HASKELL__ >= 702
 {-# LANGUAGE Trustworthy #-}
