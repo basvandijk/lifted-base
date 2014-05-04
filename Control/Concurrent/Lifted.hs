@@ -154,7 +154,7 @@ fork = liftBaseDiscard C.forkIO
 -- Note that, while the forked computation @m ()@ has access to the captured
 -- state, all its side-effects in @m@ are discarded. It is run only for its
 -- side-effects in 'IO'.
-forkWithUnmask :: MonadBaseControl IO m => ((∀ a. m a -> m a) -> m ()) -> m ThreadId
+forkWithUnmask :: MonadBaseControl IO m => ((forall a. m a -> m a) -> m ()) -> m ThreadId
 forkWithUnmask f = liftBaseWith $ \runInIO ->
                      C.forkIOWithUnmask $ \unmask ->
                        void $ runInIO $ f $ liftBaseOp_ unmask
@@ -196,7 +196,7 @@ forkOn = liftBaseDiscard . C.forkOn
 -- Note that, while the forked computation @m ()@ has access to the captured
 -- state, all its side-effects in @m@ are discarded. It is run only for its
 -- side-effects in 'IO'.
-forkOnWithUnmask :: MonadBaseControl IO m => Int -> ((∀ a. m a -> m a) -> m ()) -> m ThreadId
+forkOnWithUnmask :: MonadBaseControl IO m => Int -> ((forall a. m a -> m a) -> m ()) -> m ThreadId
 forkOnWithUnmask cap f = liftBaseWith $ \runInIO ->
                            C.forkOnWithUnmask cap $ \unmask ->
                              void $ runInIO $ f $ liftBaseOp_ unmask

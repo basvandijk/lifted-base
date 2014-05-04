@@ -177,12 +177,12 @@ catches :: MonadBaseControl IO m => m a -> [Handler m a] -> m a
 catches a handlers = control $ \runInIO ->
                        E.catches (runInIO a)
                                  [ E.Handler $ \e -> runInIO $ handler e
-                                 | Handler handler ← handlers
+                                 | Handler handler <- handlers
                                  ]
 {-# INLINABLE catches #-}
 
 -- |Generalized version of 'E.Handler'.
-data Handler m a = ∀ e. Exception e => Handler (e -> m a)
+data Handler m a = forall e. Exception e => Handler (e -> m a)
 
 -- |Generalized version of 'E.catchJust'.
 --
@@ -266,13 +266,13 @@ evaluate = liftBase . E.evaluate
 
 #if MIN_VERSION_base(4,3,0)
 -- |Generalized version of 'E.mask'.
-mask :: MonadBaseControl IO m => ((∀ a. m a -> m a) -> m b) -> m b
+mask :: MonadBaseControl IO m => ((forall a. m a -> m a) -> m b) -> m b
 mask = liftBaseOp E.mask . liftRestore
 {-# INLINABLE mask #-}
 
 liftRestore :: MonadBaseControl IO m
-            => ((∀ a.  m a ->  m a) -> b)
-            -> ((∀ a. IO a -> IO a) -> b)
+            => ((forall a.  m a ->  m a) -> b)
+            -> ((forall a. IO a -> IO a) -> b)
 liftRestore f r = f $ liftBaseOp_ r
 {-# INLINE liftRestore #-}
 
@@ -282,7 +282,7 @@ mask_ = liftBaseOp_ E.mask_
 {-# INLINABLE mask_ #-}
 
 -- |Generalized version of 'E.uninterruptibleMask'.
-uninterruptibleMask :: MonadBaseControl IO m => ((∀ a. m a -> m a) -> m b) -> m b
+uninterruptibleMask :: MonadBaseControl IO m => ((forall a. m a -> m a) -> m b) -> m b
 uninterruptibleMask = liftBaseOp E.uninterruptibleMask . liftRestore
 {-# INLINABLE uninterruptibleMask #-}
 

@@ -153,30 +153,30 @@ modifyMVar :: (MonadBaseControl IO m) => MVar a -> (a -> m (a, b)) -> m b
 
 #if MIN_VERSION_base(4,3,0)
 modifyMVar mv f = control $ \runInIO -> mask $ \restore -> do
-    aborted ← newIORef True
+    aborted <- newIORef True
     let f' x = do
-        (x', a) ← f x
+        (x', a) <- f x
         liftBase $ mask_ $ do
           writeIORef aborted False
           MVar.putMVar mv x'
         return a
-    x ← MVar.takeMVar mv
-    stM ← restore (runInIO (f' x)) `onException` MVar.putMVar mv x
-    abort ← readIORef aborted
+    x <- MVar.takeMVar mv
+    stM <- restore (runInIO (f' x)) `onException` MVar.putMVar mv x
+    abort <- readIORef aborted
     when abort $ MVar.putMVar mv x
     return stM
 #else
 modifyMVar mv f = control $ \runInIO -> block $ do
-    aborted ← newIORef True
+    aborted <- newIORef True
     let f' x = do
-        (x', a) ← f x
+        (x', a) <- f x
         liftBase $ block $ do
           writeIORef aborted False
           MVar.putMVar mv x'
         return a
-    x ← MVar.takeMVar mv
-    stM ← unblock (runInIO (f' x)) `onException` MVar.putMVar mv x
-    abort ← readIORef aborted
+    x <- MVar.takeMVar mv
+    stM <- unblock (runInIO (f' x)) `onException` MVar.putMVar mv x
+    abort <- readIORef aborted
     when abort $ MVar.putMVar mv x
     return stM
 #endif
@@ -191,16 +191,16 @@ modifyMVarMasked_ mv = modifyMVarMasked mv . (fmap (, ()) .)
 -- | Generalized version of 'MVar.modifyMVarMasked'.
 modifyMVarMasked :: (MonadBaseControl IO m) => MVar a -> (a -> m (a, b)) -> m b
 modifyMVarMasked mv f = control $ \runInIO -> mask_ $ do
-    aborted ← newIORef True
+    aborted <- newIORef True
     let f' x = do
-        (x', a) ← f x
+        (x', a) <- f x
         liftBase $ do
           writeIORef aborted False
           MVar.putMVar mv x'
         return a
-    x ← MVar.takeMVar mv
-    stM ← runInIO (f' x) `onException` MVar.putMVar mv x
-    abort ← readIORef aborted
+    x <- MVar.takeMVar mv
+    stM <- runInIO (f' x) `onException` MVar.putMVar mv x
+    abort <- readIORef aborted
     when abort $ MVar.putMVar mv x
     return stM
 {-# INLINABLE modifyMVarMasked #-}
