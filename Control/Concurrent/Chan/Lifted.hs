@@ -39,8 +39,6 @@ module Control.Concurrent.Chan.Lifted
 import Control.Concurrent.Chan ( Chan )
 import qualified Control.Concurrent.Chan as Chan
 import System.IO ( IO )
-
--- from base-unicode-symbols:
 import Prelude ( (.) )
 
 -- from transformers-base:
@@ -81,4 +79,3 @@ getChanContents = liftBase . Chan.getChanContents
 writeList2Chan :: MonadBase IO m => Chan a -> [a] -> m ()
 writeList2Chan chan = liftBase . Chan.writeList2Chan chan
 {-# INLINABLE writeList2Chan #-}
-

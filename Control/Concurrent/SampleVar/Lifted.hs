@@ -37,8 +37,6 @@ import Control.Concurrent.SampleVar ( SampleVar )
 import qualified Control.Concurrent.SampleVar as SampleVar
 import Data.Bool ( Bool )
 import System.IO ( IO )
-
--- from base-unicode-symbols:
 import Prelude ( (.) )
 
 -- from transformers-base:
@@ -79,4 +77,3 @@ writeSampleVar sv = liftBase . SampleVar.writeSampleVar sv
 isEmptySampleVar :: MonadBase IO m => SampleVar a -> m Bool
 isEmptySampleVar = liftBase . SampleVar.isEmptySampleVar
 {-# INLINABLE isEmptySampleVar #-}
-

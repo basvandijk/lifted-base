@@ -44,8 +44,6 @@ import Data.IORef ( IORef )
 import qualified Data.IORef as R
 import System.IO ( IO )
 import System.Mem.Weak ( Weak )
-
--- from base-unicode-symbols:
 import Prelude ( (.) )
 
 -- from transformers-base:

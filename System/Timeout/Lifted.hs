@@ -22,14 +22,12 @@
 module System.Timeout.Lifted ( timeout ) where
 
 -- from base:
+import Prelude                       ( (.) )
 import           Data.Int            ( Int )
 import           Data.Maybe          ( Maybe(Nothing, Just), maybe )
 import           Control.Monad       ( (>>=), return, liftM )
 import           System.IO           ( IO )
 import qualified System.Timeout as T ( timeout )
-
--- from base-unicode-symbols:
-import Prelude ( (.) )
 
 -- from monad-control:
 import Control.Monad.Trans.Control ( MonadBaseControl, restoreM, liftBaseWith )

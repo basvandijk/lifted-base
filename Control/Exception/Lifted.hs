@@ -75,6 +75,7 @@ module Control.Exception.Lifted
 --------------------------------------------------------------------------------
 
 -- from base:
+import Prelude         ( (.) )
 import Data.Function   ( ($) )
 import Data.Either     ( Either(Left, Right), either )
 import Data.Maybe      ( Maybe )
@@ -115,9 +116,6 @@ import           Control.Concurrent ( ThreadId )
 #if !MIN_VERSION_base(4,4,0)
 import Data.Bool ( Bool )
 #endif
-
--- from base-unicode-symbols:
-import Prelude ( (.) )
 
 -- from transformers-base:
 import Control.Monad.Base ( MonadBase, liftBase )

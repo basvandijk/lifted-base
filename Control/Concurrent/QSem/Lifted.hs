@@ -34,8 +34,6 @@ import Control.Concurrent.QSem ( QSem )
 import qualified Control.Concurrent.QSem as QSem
 import Data.Int ( Int )
 import System.IO ( IO )
-
--- from base-unicode-symbols:
 import Prelude ( (.) )
 
 -- from transformers-base:
@@ -61,4 +59,3 @@ waitQSem = liftBase . QSem.waitQSem
 signalQSem :: MonadBase IO m => QSem -> m ()
 signalQSem = liftBase . QSem.signalQSem
 {-# INLINABLE signalQSem #-}
-

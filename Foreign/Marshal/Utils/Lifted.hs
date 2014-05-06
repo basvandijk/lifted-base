@@ -26,8 +26,6 @@ module Foreign.Marshal.Utils.Lifted
 -- from base:
 import qualified Foreign as F
 import System.IO     ( IO )
-
--- from base-unicode-symbols:
 import Prelude ( (.) )
 
 -- from monad-control:

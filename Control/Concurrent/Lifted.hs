@@ -86,6 +86,7 @@ module Control.Concurrent.Lifted
 --------------------------------------------------------------------------------
 
 -- from base:
+import Prelude            ( (.) )
 import Data.Bool          ( Bool )
 import Data.Int           ( Int )
 import Data.Function      ( ($) )
@@ -99,9 +100,6 @@ import System.Mem.Weak    ( Weak )
 
 import           Control.Concurrent ( ThreadId )
 import qualified Control.Concurrent as C
-
--- from base-unicode-symbols:
-import Prelude ( (.) )
 
 -- from transformers-base:
 import Control.Monad.Base ( MonadBase, liftBase )

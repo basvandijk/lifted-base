@@ -50,6 +50,7 @@ module Control.Concurrent.MVar.Lifted
 --------------------------------------------------------------------------------
 
 -- from base:
+import Prelude       ( (.) )
 import Data.Bool     ( Bool(False, True) )
 import Data.Function ( ($) )
 import Data.Functor  ( fmap )
@@ -73,9 +74,6 @@ import System.Mem.Weak ( Weak )
 #if __GLASGOW_HASKELL__ < 700
 import Control.Monad ( (>>=), (>>), fail )
 #endif
-
--- from base-unicode-symbols:
-import Prelude ( (.) )
 
 -- from transformers-base:
 import Control.Monad.Base ( MonadBase, liftBase )
