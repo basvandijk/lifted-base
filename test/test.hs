@@ -17,7 +17,7 @@ import Control.Monad.Trans.List
 import Control.Monad.Trans.Maybe
 import Control.Monad.Trans.Reader
 import Control.Monad.Trans.Writer
-import Control.Monad.Trans.Error
+import Control.Monad.Trans.Except
 import Control.Monad.Trans.State
 import qualified Control.Monad.Trans.RWS as RWS
 
@@ -44,17 +44,17 @@ main = defaultMain
     , testSuite "MaybeT" $ fmap fromJust . runMaybeT
     , testSuite "ReaderT" $ flip runReaderT "reader state"
     , testSuite "WriterT" runWriterT'
-    , testSuite "ErrorT" runErrorT'
+    , testSuite "ExceptT" runExceptT'
     , testSuite "StateT" $ flip evalStateT "state state"
     , testSuite "RWST" $ \m -> runRWST' m "RWS in" "RWS state"
-    , testCase "ErrorT throwError" case_throwError
+    , testCase "ExceptT throwE" case_throwE
     , testCase "WriterT tell" case_tell
     ]
   where
     runWriterT' :: Functor m => WriterT [Int] m a -> m a
     runWriterT' = fmap fst . runWriterT
-    runErrorT' :: Functor m => ErrorT String m () -> m ()
-    runErrorT' = fmap (either (const ()) id) . runErrorT
+    runExceptT' :: Functor m => ExceptT String m () -> m ()
+    runExceptT' = fmap (either (const ()) id) . runExceptT
     runRWST' :: (Monad m, Functor m) => RWS.RWST r [Int] s m a -> r -> s -> m a
     runRWST' m r s = fmap fst $ RWS.evalRWST m r s
 
@@ -134,11 +134,11 @@ case_onException run = do
     k <- readIORef i
     k @?= 4
 
-case_throwError :: Assertion
-case_throwError = do
+case_throwE :: Assertion
+case_throwE = do
     i <- newIORef one
-    Left "throwError" <- runErrorT $
-        (liftBase (writeIORef i 2) >> throwError "throwError")
+    Left "throwE" <- runExceptT $
+        (liftBase (writeIORef i 2) >> throwE "throwE")
         `finally`
         (liftBase $ writeIORef i 3)
     j <- readIORef i
