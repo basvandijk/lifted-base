@@ -1,5 +1,4 @@
 {-# LANGUAGE CPP #-}
-{-# LANGUAGE UnicodeSyntax #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE FlexibleContexts #-}
 
@@ -47,7 +46,7 @@ import System.IO ( IO )
 import System.Mem.Weak ( Weak )
 
 -- from base-unicode-symbols:
-import Data.Function.Unicode ( (∘) )
+import Prelude ( (.) )
 
 -- from transformers-base:
 import Control.Monad.Base ( MonadBase, liftBase )
@@ -62,50 +61,50 @@ import Control.Monad.Trans.Control ( MonadBaseControl, liftBaseDiscard )
 --------------------------------------------------------------------------------
 
 -- | Generalized version of 'R.newIORef'.
-newIORef ∷ MonadBase IO m ⇒ a → m (IORef a)
-newIORef = liftBase ∘ R.newIORef
+newIORef :: MonadBase IO m => a -> m (IORef a)
+newIORef = liftBase . R.newIORef
 {-# INLINABLE newIORef #-}
 
 -- | Generalized version of 'R.readIORef'.
-readIORef ∷ MonadBase IO m ⇒ IORef a → m a
-readIORef = liftBase ∘ R.readIORef
+readIORef :: MonadBase IO m => IORef a -> m a
+readIORef = liftBase . R.readIORef
 {-# INLINABLE readIORef #-}
 
 -- | Generalized version of 'R.writeIORef'.
-writeIORef ∷ MonadBase IO m ⇒ IORef a → a → m ()
-writeIORef r = liftBase ∘ R.writeIORef r
+writeIORef :: MonadBase IO m => IORef a -> a -> m ()
+writeIORef r = liftBase . R.writeIORef r
 {-# INLINABLE writeIORef #-}
 
 -- | Generalized version of 'R.modifyIORef'.
-modifyIORef ∷ MonadBase IO m ⇒ IORef a → (a → a) → m ()
-modifyIORef r = liftBase ∘ R.modifyIORef r
+modifyIORef :: MonadBase IO m => IORef a -> (a -> a) -> m ()
+modifyIORef r = liftBase . R.modifyIORef r
 {-# INLINABLE modifyIORef #-}
 
 -- | Generalized version of 'R.atomicModifyIORef'.
-atomicModifyIORef ∷ MonadBase IO m ⇒ IORef a → (a → (a, b)) → m b
-atomicModifyIORef r = liftBase ∘ R.atomicModifyIORef r
+atomicModifyIORef :: MonadBase IO m => IORef a -> (a -> (a, b)) -> m b
+atomicModifyIORef r = liftBase . R.atomicModifyIORef r
 {-# INLINABLE atomicModifyIORef #-}
 
 #if MIN_VERSION_base(4,6,0)
 -- | Generalized version of 'R.modifyIORef''.
-modifyIORef' ∷ MonadBase IO m ⇒ IORef a → (a → a) → m ()
-modifyIORef' r = liftBase ∘ R.modifyIORef' r
+modifyIORef' :: MonadBase IO m => IORef a -> (a -> a) -> m ()
+modifyIORef' r = liftBase . R.modifyIORef' r
 {-# INLINABLE modifyIORef' #-}
 
 -- | Generalized version of 'R.atomicModifyIORef''.
-atomicModifyIORef' ∷ MonadBase IO m ⇒ IORef a → (a → (a, b)) → m b
-atomicModifyIORef' r = liftBase ∘ R.atomicModifyIORef' r
+atomicModifyIORef' :: MonadBase IO m => IORef a -> (a -> (a, b)) -> m b
+atomicModifyIORef' r = liftBase . R.atomicModifyIORef' r
 {-# INLINABLE atomicModifyIORef' #-}
 
 -- | Generalized version of 'R.atomicWriteIORef'.
-atomicWriteIORef ∷ MonadBase IO m ⇒ IORef a → a → m ()
-atomicWriteIORef r = liftBase ∘ R.atomicWriteIORef r
+atomicWriteIORef :: MonadBase IO m => IORef a -> a -> m ()
+atomicWriteIORef r = liftBase . R.atomicWriteIORef r
 #endif
 
 -- | Generalized version of 'R.mkWeakIORef'.
 --
 -- Note any monadic side effects in @m@ of the \"finalizer\" computation
 -- are discarded.
-mkWeakIORef ∷ MonadBaseControl IO m ⇒ IORef a → m () → m (Weak (IORef a))
-mkWeakIORef = liftBaseDiscard ∘ R.mkWeakIORef
+mkWeakIORef :: MonadBaseControl IO m => IORef a -> m () -> m (Weak (IORef a))
+mkWeakIORef = liftBaseDiscard . R.mkWeakIORef
 {-# INLINABLE mkWeakIORef #-}

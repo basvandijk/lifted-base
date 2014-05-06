@@ -1,5 +1,4 @@
 {-# LANGUAGE CPP #-}
-{-# LANGUAGE UnicodeSyntax #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE FlexibleContexts #-}
 
@@ -42,7 +41,7 @@ import qualified Control.Concurrent.Chan as Chan
 import System.IO ( IO )
 
 -- from base-unicode-symbols:
-import Data.Function.Unicode ( (∘) )
+import Prelude ( (.) )
 
 -- from transformers-base:
 import Control.Monad.Base ( MonadBase, liftBase )
@@ -54,32 +53,32 @@ import Control.Monad.Base ( MonadBase, liftBase )
 --------------------------------------------------------------------------------
 
 -- | Generalized version of 'Chan.newChan'.
-newChan ∷ MonadBase IO m ⇒ m (Chan a)
+newChan :: MonadBase IO m => m (Chan a)
 newChan = liftBase Chan.newChan
 {-# INLINABLE newChan #-}
 
 -- | Generalized version of 'Chan.writeChan'.
-writeChan ∷ MonadBase IO m ⇒ Chan a → a → m ()
-writeChan chan = liftBase ∘ Chan.writeChan chan
+writeChan :: MonadBase IO m => Chan a -> a -> m ()
+writeChan chan = liftBase . Chan.writeChan chan
 {-# INLINABLE writeChan #-}
 
 -- | Generalized version of 'Chan.readChan'.
-readChan ∷ MonadBase IO m ⇒ Chan a → m a
-readChan = liftBase ∘ Chan.readChan
+readChan :: MonadBase IO m => Chan a -> m a
+readChan = liftBase . Chan.readChan
 {-# INLINABLE readChan #-}
 
 -- | Generalized version of 'Chan.dupChan'.
-dupChan ∷ MonadBase IO m ⇒ Chan a → m (Chan a)
-dupChan = liftBase ∘ Chan.dupChan
+dupChan :: MonadBase IO m => Chan a -> m (Chan a)
+dupChan = liftBase . Chan.dupChan
 {-# INLINABLE dupChan #-}
 
 -- | Generalized version of 'Chan.getChanContents'.
-getChanContents ∷ MonadBase IO m ⇒ Chan a → m [a]
-getChanContents = liftBase ∘ Chan.getChanContents
+getChanContents :: MonadBase IO m => Chan a -> m [a]
+getChanContents = liftBase . Chan.getChanContents
 {-# INLINABLE getChanContents #-}
 
 -- | Generalized version of 'Chan.writeList2Chan'.
-writeList2Chan ∷ MonadBase IO m ⇒ Chan a → [a] → m ()
-writeList2Chan chan = liftBase ∘ Chan.writeList2Chan chan
+writeList2Chan :: MonadBase IO m => Chan a -> [a] -> m ()
+writeList2Chan chan = liftBase . Chan.writeList2Chan chan
 {-# INLINABLE writeList2Chan #-}
 

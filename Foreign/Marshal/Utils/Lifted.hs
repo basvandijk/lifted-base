@@ -1,4 +1,6 @@
-{-# LANGUAGE CPP, FlexibleContexts, UnicodeSyntax, NoImplicitPrelude #-}
+{-# LANGUAGE CPP #-}
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 #if __GLASGOW_HASKELL__ >= 702
 {-# LANGUAGE Trustworthy #-}
@@ -26,7 +28,7 @@ import qualified Foreign as F
 import System.IO     ( IO )
 
 -- from base-unicode-symbols:
-import Data.Function.Unicode ( (∘) )
+import Prelude ( (.) )
 
 -- from monad-control:
 import Control.Monad.Trans.Control ( MonadBaseControl
@@ -36,9 +38,9 @@ import Control.Monad.Trans.Control ( MonadBaseControl
 --
 -- Note, when the given function throws an exception any monadic side
 -- effects in @m@ will be discarded.
-with ∷ (MonadBaseControl IO m, F.Storable a)
-     ⇒ a       -- ^ value to be poked
-     → (F.Ptr a → m b) -- ^ computation to run
-     → m b
-with = liftBaseOp ∘ F.with
+with :: (MonadBaseControl IO m, F.Storable a)
+     => a                -- ^ value to be poked
+     -> (F.Ptr a -> m b) -- ^ computation to run
+     -> m b
+with = liftBaseOp . F.with
 {-# INLINEABLE with #-}

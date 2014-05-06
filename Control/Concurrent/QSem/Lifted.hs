@@ -1,5 +1,4 @@
 {-# LANGUAGE CPP #-}
-{-# LANGUAGE UnicodeSyntax #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE FlexibleContexts #-}
 
@@ -37,7 +36,7 @@ import Data.Int ( Int )
 import System.IO ( IO )
 
 -- from base-unicode-symbols:
-import Data.Function.Unicode ( (∘) )
+import Prelude ( (.) )
 
 -- from transformers-base:
 import Control.Monad.Base ( MonadBase, liftBase )
@@ -49,17 +48,17 @@ import Control.Monad.Base ( MonadBase, liftBase )
 --------------------------------------------------------------------------------
 
 -- | Generalized version of 'QSem.newQSem'.
-newQSem ∷ MonadBase IO m ⇒ Int → m QSem
-newQSem = liftBase ∘ QSem.newQSem
+newQSem :: MonadBase IO m => Int -> m QSem
+newQSem = liftBase . QSem.newQSem
 {-# INLINABLE newQSem #-}
 
 -- | Generalized version of 'QSem.waitQSem'.
-waitQSem ∷ MonadBase IO m ⇒ QSem → m ()
-waitQSem = liftBase ∘ QSem.waitQSem
+waitQSem :: MonadBase IO m => QSem -> m ()
+waitQSem = liftBase . QSem.waitQSem
 {-# INLINABLE waitQSem #-}
 
 -- | Generalized version of 'QSem.signalQSem'.
-signalQSem ∷ MonadBase IO m ⇒ QSem → m ()
-signalQSem = liftBase ∘ QSem.signalQSem
+signalQSem :: MonadBase IO m => QSem -> m ()
+signalQSem = liftBase . QSem.signalQSem
 {-# INLINABLE signalQSem #-}
 

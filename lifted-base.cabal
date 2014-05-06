@@ -48,7 +48,6 @@ Library
                    Control.Concurrent.SampleVar.Lifted
 
   Build-depends: base                 >= 3     && < 5
-               , base-unicode-symbols >= 0.1.1 && < 0.3
                , transformers-base    >= 0.4   && < 0.5
                , monad-control        >= 0.3   && < 0.4
 

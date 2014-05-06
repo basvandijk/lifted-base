@@ -1,5 +1,4 @@
 {-# LANGUAGE CPP
-           , UnicodeSyntax
            , NoImplicitPrelude
            , ExistentialQuantification
            , FlexibleContexts
@@ -118,7 +117,7 @@ import Data.Bool ( Bool )
 #endif
 
 -- from base-unicode-symbols:
-import Data.Function.Unicode ( (∘) )
+import Prelude ( (.) )
 
 -- from transformers-base:
 import Control.Monad.Base ( MonadBase, liftBase )
@@ -139,17 +138,17 @@ import Control.Monad.Trans.Control ( liftBaseOp )
 --------------------------------------------------------------------------------
 
 -- |Generalized version of 'E.throwIO'.
-throwIO ∷ (MonadBase IO m, Exception e) ⇒ e → m a
-throwIO = liftBase ∘ E.throwIO
+throwIO :: (MonadBase IO m, Exception e) => e -> m a
+throwIO = liftBase . E.throwIO
 {-# INLINABLE throwIO #-}
 
 -- |Generalized version of 'E.ioError'.
-ioError ∷ MonadBase IO m ⇒ IOError → m a
-ioError = liftBase ∘ E.ioError
+ioError :: MonadBase IO m => IOError -> m a
+ioError = liftBase . E.ioError
 {-# INLINABLE ioError #-}
 
 -- | Generalized version of 'C.throwTo'.
-throwTo ∷ (MonadBase IO m, Exception e) ⇒ ThreadId → e → m ()
+throwTo :: (MonadBase IO m, Exception e) => ThreadId -> e -> m ()
 throwTo tid e = liftBase $ C.throwTo tid e
 {-# INLINABLE throwTo #-}
 
@@ -161,43 +160,43 @@ throwTo tid e = liftBase $ C.throwTo tid e
 --
 -- Note, when the given computation throws an exception any monadic
 -- side effects in @m@ will be discarded.
-catch ∷ (MonadBaseControl IO m, Exception e)
-      ⇒ m a       -- ^ The computation to run
-      → (e → m a) -- ^ Handler to invoke if an exception is raised
-      → m a
-catch a handler = control $ \runInIO →
+catch :: (MonadBaseControl IO m, Exception e)
+      => m a       -- ^ The computation to run
+      -> (e -> m a) -- ^ Handler to invoke if an exception is raised
+      -> m a
+catch a handler = control $ \runInIO ->
                     E.catch (runInIO a)
-                            (\e → runInIO $ handler e)
+                            (\e -> runInIO $ handler e)
 {-# INLINABLE catch #-}
 
 -- |Generalized version of 'E.catches'.
 --
 -- Note, when the given computation throws an exception any monadic
 -- side effects in @m@ will be discarded.
-catches ∷ MonadBaseControl IO m ⇒ m a → [Handler m a] → m a
-catches a handlers = control $ \runInIO →
+catches :: MonadBaseControl IO m => m a -> [Handler m a] -> m a
+catches a handlers = control $ \runInIO ->
                        E.catches (runInIO a)
-                                 [ E.Handler $ \e → runInIO $ handler e
-                                 | Handler handler ← handlers
+                                 [ E.Handler $ \e -> runInIO $ handler e
+                                 | Handler handler <- handlers
                                  ]
 {-# INLINABLE catches #-}
 
 -- |Generalized version of 'E.Handler'.
-data Handler m a = ∀ e. Exception e ⇒ Handler (e → m a)
+data Handler m a = forall e. Exception e => Handler (e -> m a)
 
 -- |Generalized version of 'E.catchJust'.
 --
 -- Note, when the given computation throws an exception any monadic
 -- side effects in @m@ will be discarded.
-catchJust ∷ (MonadBaseControl IO m, Exception e)
-          ⇒ (e → Maybe b) -- ^ Predicate to select exceptions
-          → m a           -- ^ Computation to run
-          → (b → m a)     -- ^ Handler
-          → m a
-catchJust p a handler = control $ \runInIO →
+catchJust :: (MonadBaseControl IO m, Exception e)
+          => (e -> Maybe b) -- ^ Predicate to select exceptions
+          -> m a           -- ^ Computation to run
+          -> (b -> m a)     -- ^ Handler
+          -> m a
+catchJust p a handler = control $ \runInIO ->
                           E.catchJust p
                                       (runInIO a)
-                                      (\e → runInIO (handler e))
+                                      (\e -> runInIO (handler e))
 {-# INLINABLE catchJust #-}
 
 
@@ -209,9 +208,9 @@ catchJust p a handler = control $ \runInIO →
 --
 -- Note, when the given computation throws an exception any monadic
 -- side effects in @m@ will be discarded.
-handle ∷ (MonadBaseControl IO m, Exception e) ⇒ (e → m a) → m a → m a
-handle handler a = control $ \runInIO →
-                     E.handle (\e → runInIO (handler e))
+handle :: (MonadBaseControl IO m, Exception e) => (e -> m a) -> m a -> m a
+handle handler a = control $ \runInIO ->
+                     E.handle (\e -> runInIO (handler e))
                               (runInIO a)
 {-# INLINABLE handle #-}
 
@@ -219,10 +218,10 @@ handle handler a = control $ \runInIO →
 --
 -- Note, when the given computation throws an exception any monadic
 -- side effects in @m@ will be discarded.
-handleJust ∷ (MonadBaseControl IO m, Exception e)
-           ⇒ (e → Maybe b) → (b → m a) → m a → m a
-handleJust p handler a = control $ \runInIO →
-                           E.handleJust p (\e → runInIO (handler e))
+handleJust :: (MonadBaseControl IO m, Exception e)
+           => (e -> Maybe b) -> (b -> m a) -> m a -> m a
+handleJust p handler a = control $ \runInIO ->
+                           E.handleJust p (\e -> runInIO (handler e))
                                           (runInIO a)
 {-# INLINABLE handleJust #-}
 
@@ -230,24 +229,24 @@ handleJust p handler a = control $ \runInIO →
 -- ** The @try@ functions
 --------------------------------------------------------------------------------
 
-sequenceEither ∷ MonadBaseControl IO m ⇒ Either e (StM m a) → m (Either e a)
-sequenceEither = either (return ∘ Left) (liftM Right ∘ restoreM)
+sequenceEither :: MonadBaseControl IO m => Either e (StM m a) -> m (Either e a)
+sequenceEither = either (return . Left) (liftM Right . restoreM)
 {-# INLINE sequenceEither #-}
 
 -- |Generalized version of 'E.try'.
 --
 -- Note, when the given computation throws an exception any monadic
 -- side effects in @m@ will be discarded.
-try ∷ (MonadBaseControl IO m, Exception e) ⇒ m a → m (Either e a)
-try m = liftBaseWith (\runInIO → E.try (runInIO m)) >>= sequenceEither
+try :: (MonadBaseControl IO m, Exception e) => m a -> m (Either e a)
+try m = liftBaseWith (\runInIO -> E.try (runInIO m)) >>= sequenceEither
 {-# INLINABLE try #-}
 
 -- |Generalized version of 'E.tryJust'.
 --
 -- Note, when the given computation throws an exception any monadic
 -- side effects in @m@ will be discarded.
-tryJust ∷ (MonadBaseControl IO m, Exception e) ⇒ (e → Maybe b) → m a → m (Either b a)
-tryJust p m = liftBaseWith (\runInIO → E.tryJust p (runInIO m)) >>= sequenceEither
+tryJust :: (MonadBaseControl IO m, Exception e) => (e -> Maybe b) -> m a -> m (Either b a)
+tryJust p m = liftBaseWith (\runInIO -> E.tryJust p (runInIO m)) >>= sequenceEither
 {-# INLINABLE tryJust #-}
 
 
@@ -256,8 +255,8 @@ tryJust p m = liftBaseWith (\runInIO → E.tryJust p (runInIO m)) >>= sequenceEi
 --------------------------------------------------------------------------------
 
 -- |Generalized version of 'E.evaluate'.
-evaluate ∷ MonadBase IO m ⇒ a → m a
-evaluate = liftBase ∘ E.evaluate
+evaluate :: MonadBase IO m => a -> m a
+evaluate = liftBase . E.evaluate
 {-# INLINABLE evaluate #-}
 
 
@@ -267,50 +266,50 @@ evaluate = liftBase ∘ E.evaluate
 
 #if MIN_VERSION_base(4,3,0)
 -- |Generalized version of 'E.mask'.
-mask ∷ MonadBaseControl IO m ⇒ ((∀ a. m a → m a) → m b) → m b
-mask = liftBaseOp E.mask ∘ liftRestore
+mask :: MonadBaseControl IO m => ((forall a. m a -> m a) -> m b) -> m b
+mask = liftBaseOp E.mask . liftRestore
 {-# INLINABLE mask #-}
 
-liftRestore ∷ MonadBaseControl IO m
-            ⇒ ((∀ a.  m a →  m a) → b)
-            → ((∀ a. IO a → IO a) → b)
+liftRestore :: MonadBaseControl IO m
+            => ((forall a.  m a ->  m a) -> b)
+            -> ((forall a. IO a -> IO a) -> b)
 liftRestore f r = f $ liftBaseOp_ r
 {-# INLINE liftRestore #-}
 
 -- |Generalized version of 'E.mask_'.
-mask_ ∷ MonadBaseControl IO m ⇒ m a → m a
+mask_ :: MonadBaseControl IO m => m a -> m a
 mask_ = liftBaseOp_ E.mask_
 {-# INLINABLE mask_ #-}
 
 -- |Generalized version of 'E.uninterruptibleMask'.
-uninterruptibleMask ∷ MonadBaseControl IO m ⇒ ((∀ a. m a → m a) → m b) → m b
-uninterruptibleMask = liftBaseOp E.uninterruptibleMask ∘ liftRestore
+uninterruptibleMask :: MonadBaseControl IO m => ((forall a. m a -> m a) -> m b) -> m b
+uninterruptibleMask = liftBaseOp E.uninterruptibleMask . liftRestore
 {-# INLINABLE uninterruptibleMask #-}
 
 -- |Generalized version of 'E.uninterruptibleMask_'.
-uninterruptibleMask_ ∷ MonadBaseControl IO m ⇒ m a → m a
+uninterruptibleMask_ :: MonadBaseControl IO m => m a -> m a
 uninterruptibleMask_ = liftBaseOp_ E.uninterruptibleMask_
 {-# INLINABLE uninterruptibleMask_ #-}
 
 -- |Generalized version of 'E.getMaskingState'.
-getMaskingState ∷ MonadBase IO m ⇒ m MaskingState
+getMaskingState :: MonadBase IO m => m MaskingState
 getMaskingState = liftBase E.getMaskingState
 {-# INLINABLE getMaskingState #-}
 
 #if MIN_VERSION_base(4,4,0)
 -- |Generalized version of 'E.allowInterrupt'.
-allowInterrupt ∷ MonadBase IO m ⇒ m ()
+allowInterrupt :: MonadBase IO m => m ()
 allowInterrupt = liftBase E.allowInterrupt
 {-# INLINABLE allowInterrupt #-}
 #endif
 #else
 -- |Generalized version of 'E.block'.
-block ∷ MonadBaseControl IO m ⇒ m a → m a
+block :: MonadBaseControl IO m => m a -> m a
 block = liftBaseOp_ E.block
 {-# INLINABLE block #-}
 
 -- |Generalized version of 'E.unblock'.
-unblock ∷ MonadBaseControl IO m ⇒ m a → m a
+unblock :: MonadBaseControl IO m => m a -> m a
 unblock = liftBaseOp_ E.unblock
 {-# INLINABLE unblock #-}
 #endif
@@ -319,7 +318,7 @@ unblock = liftBaseOp_ E.unblock
 -- | Generalized version of 'E.blocked'.
 -- returns @True@ if asynchronous exceptions are blocked in the
 -- current thread.
-blocked ∷ MonadBase IO m ⇒ m Bool
+blocked :: MonadBase IO m => m Bool
 blocked = liftBase E.blocked
 {-# INLINABLE blocked #-}
 #endif
@@ -349,15 +348,15 @@ blocked = liftBase E.blocked
 -- it will be more efficient to write:
 --
 -- @'liftBaseOp' ('E.bracket' acquire release)@
-bracket ∷ MonadBaseControl IO m
-        ⇒ m a       -- ^ computation to run first (\"acquire resource\")
-        → (a → m b) -- ^ computation to run last (\"release resource\")
-        → (a → m c) -- ^ computation to run in-between
-        → m c
-bracket before after thing = control $ \runInIO →
+bracket :: MonadBaseControl IO m
+        => m a       -- ^ computation to run first (\"acquire resource\")
+        -> (a -> m b) -- ^ computation to run last (\"release resource\")
+        -> (a -> m c) -- ^ computation to run in-between
+        -> m c
+bracket before after thing = control $ \runInIO ->
                                E.bracket (runInIO before)
-                                         (\st → runInIO $ restoreM st >>= after)
-                                         (\st → runInIO $ restoreM st >>= thing)
+                                         (\st -> runInIO $ restoreM st >>= after)
+                                         (\st -> runInIO $ restoreM st >>= thing)
 {-# INLINABLE bracket #-}
 
 -- |Generalized version of 'E.bracket_'.
@@ -371,12 +370,12 @@ bracket before after thing = control $ \runInIO →
 -- it will be more efficient to write:
 --
 -- @'liftBaseOp_' ('E.bracket_' acquire release)@
-bracket_ ∷ MonadBaseControl IO m
-         ⇒ m a -- ^ computation to run first (\"acquire resource\")
-         → m b -- ^ computation to run last (\"release resource\")
-         → m c -- ^ computation to run in-between
-         → m c
-bracket_ before after thing = control $ \runInIO →
+bracket_ :: MonadBaseControl IO m
+         => m a -- ^ computation to run first (\"acquire resource\")
+         -> m b -- ^ computation to run last (\"release resource\")
+         -> m c -- ^ computation to run in-between
+         -> m c
+bracket_ before after thing = control $ \runInIO ->
                                 E.bracket_ (runInIO before)
                                            (runInIO after)
                                            (runInIO thing)
@@ -402,16 +401,16 @@ bracket_ before after thing = control $ \runInIO →
 -- type 'IO' it will be more efficient to write:
 --
 -- @'liftBaseOp' ('E.bracketOnError' acquire release)@
-bracketOnError ∷ MonadBaseControl IO m
-               ⇒ m a       -- ^ computation to run first (\"acquire resource\")
-               → (a → m b) -- ^ computation to run last (\"release resource\")
-               → (a → m c) -- ^ computation to run in-between
-               → m c
+bracketOnError :: MonadBaseControl IO m
+               => m a       -- ^ computation to run first (\"acquire resource\")
+               -> (a -> m b) -- ^ computation to run last (\"release resource\")
+               -> (a -> m c) -- ^ computation to run in-between
+               -> m c
 bracketOnError before after thing =
-    control $ \runInIO →
+    control $ \runInIO ->
       E.bracketOnError (runInIO before)
-                       (\st → runInIO $ restoreM st >>= after)
-                       (\st → runInIO $ restoreM st >>= thing)
+                       (\st -> runInIO $ restoreM st >>= after)
+                       (\st -> runInIO $ restoreM st >>= thing)
 {-# INLINABLE bracketOnError #-}
 
 
@@ -423,11 +422,11 @@ bracketOnError before after thing =
 --
 -- Note, any monadic side effects in @m@ of the \"afterward\"
 -- computation will be discarded.
-finally ∷ MonadBaseControl IO m
-        ⇒ m a -- ^ computation to run first
-        → m b -- ^ computation to run afterward (even if an exception was raised)
-        → m a
-finally a sequel = control $ \runInIO →
+finally :: MonadBaseControl IO m
+        => m a -- ^ computation to run first
+        -> m b -- ^ computation to run afterward (even if an exception was raised)
+        -> m a
+finally a sequel = control $ \runInIO ->
                      E.finally (runInIO a)
                                (runInIO sequel)
 {-# INLINABLE finally #-}
@@ -436,8 +435,8 @@ finally a sequel = control $ \runInIO →
 --
 -- Note, any monadic side effects in @m@ of the \"afterward\"
 -- computation will be discarded.
-onException ∷ MonadBaseControl IO m ⇒ m a → m b → m a
-onException m what = control $ \runInIO →
+onException :: MonadBaseControl IO m => m a -> m b -> m a
+onException m what = control $ \runInIO ->
                        E.onException (runInIO m)
                                      (runInIO what)
 {-# INLINABLE onException #-}
