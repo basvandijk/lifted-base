@@ -55,9 +55,9 @@ module Control.Concurrent.Lifted
       -- * Communication abstractions
     , module Control.Concurrent.MVar.Lifted
     , module Control.Concurrent.Chan.Lifted
-#if !MIN_VERSION_base(4,6,0)
     , module Control.Concurrent.QSem.Lifted
     , module Control.Concurrent.QSemN.Lifted
+#if !MIN_VERSION_base(4,7,0)
     , module Control.Concurrent.SampleVar.Lifted
 #endif
 
@@ -115,9 +115,9 @@ import Control.Monad               ( void )
 -- from lifted-base (this package):
 import Control.Concurrent.MVar.Lifted
 import Control.Concurrent.Chan.Lifted
-#if !MIN_VERSION_base(4,6,0)
 import Control.Concurrent.QSem.Lifted
 import Control.Concurrent.QSemN.Lifted
+#if !MIN_VERSION_base(4,7,0)
 import Control.Concurrent.SampleVar.Lifted
 #endif
 import Control.Exception.Lifted ( throwTo

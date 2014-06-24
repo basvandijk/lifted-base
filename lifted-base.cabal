@@ -37,14 +37,14 @@ Library
   Exposed-modules: Control.Exception.Lifted
                    Control.Concurrent.MVar.Lifted
                    Control.Concurrent.Chan.Lifted
+                   Control.Concurrent.QSem.Lifted
+                   Control.Concurrent.QSemN.Lifted
                    Control.Concurrent.Lifted
                    Data.IORef.Lifted
                    Foreign.Marshal.Utils.Lifted
                    System.Timeout.Lifted
-  if impl(ghc < 7.6)
+  if impl(ghc < 7.8)
     Exposed-modules:
-                   Control.Concurrent.QSem.Lifted
-                   Control.Concurrent.QSemN.Lifted
                    Control.Concurrent.SampleVar.Lifted
 
   Build-depends: base                 >= 3     && < 5

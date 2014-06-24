@@ -42,6 +42,10 @@ module Control.Concurrent.MVar.Lifted
 #else
     , addMVarFinalizer
 #endif
+#if MIN_VERSION_base(4,7,0)
+    , withMVarMasked
+    , tryReadMVar
+#endif
     ) where
 
 
@@ -220,4 +224,14 @@ mkWeakMVar = liftBaseDiscard . MVar.mkWeakMVar
 addMVarFinalizer :: MonadBaseControl IO m => MVar a -> m () -> m ()
 addMVarFinalizer = liftBaseDiscard . MVar.addMVarFinalizer
 {-# INLINABLE addMVarFinalizer #-}
+#endif
+
+#if MIN_VERSION_base (4,7,0)
+-- | Generalized version of 'MVar.withMVarMasked'.
+withMVarMasked :: MonadBaseControl IO m => MVar a -> (a -> m b) -> m b
+withMVarMasked = liftBaseOp . MVar.withMVarMasked
+
+-- | Generalized version of 'MVar.tryReadMVar'.
+tryReadMVar :: MonadBase IO m => MVar a -> m (Maybe a)
+tryReadMVar = liftBase . MVar.tryReadMVar
 #endif
