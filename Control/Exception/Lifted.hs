@@ -1,8 +1,7 @@
 {-# LANGUAGE CPP
            , NoImplicitPrelude
            , ExistentialQuantification
-           , FlexibleContexts
-           , ImpredicativeTypes #-}
+           , FlexibleContexts #-}
 
 #if MIN_VERSION_base(4,3,0)
 {-# LANGUAGE RankNTypes #-} -- for mask
@@ -125,7 +124,7 @@ import Control.Monad.Trans.Control ( MonadBaseControl, StM
                                    , liftBaseWith, restoreM
                                    , control, liftBaseOp_
                                    )
-#if MIN_VERSION_base(4,3,0) || defined (__HADDOCK__)
+#if defined (__HADDOCK__)
 import Control.Monad.Trans.Control ( liftBaseOp )
 #endif
 
@@ -265,14 +264,9 @@ evaluate = liftBase . E.evaluate
 #if MIN_VERSION_base(4,3,0)
 -- |Generalized version of 'E.mask'.
 mask :: MonadBaseControl IO m => ((forall a. m a -> m a) -> m b) -> m b
-mask = liftBaseOp E.mask . liftRestore
+mask f = control $ \runInBase ->
+           E.mask $ \g -> runInBase $ f $ liftBaseOp_ g
 {-# INLINABLE mask #-}
-
-liftRestore :: MonadBaseControl IO m
-            => ((forall a.  m a ->  m a) -> b)
-            -> ((forall a. IO a -> IO a) -> b)
-liftRestore f r = f $ liftBaseOp_ r
-{-# INLINE liftRestore #-}
 
 -- |Generalized version of 'E.mask_'.
 mask_ :: MonadBaseControl IO m => m a -> m a
@@ -280,8 +274,12 @@ mask_ = liftBaseOp_ E.mask_
 {-# INLINABLE mask_ #-}
 
 -- |Generalized version of 'E.uninterruptibleMask'.
-uninterruptibleMask :: MonadBaseControl IO m => ((forall a. m a -> m a) -> m b) -> m b
-uninterruptibleMask = liftBaseOp E.uninterruptibleMask . liftRestore
+uninterruptibleMask
+    :: MonadBaseControl IO m => ((forall a. m a -> m a) -> m b) -> m b
+uninterruptibleMask f =
+    control $ \runInBase ->
+        E.uninterruptibleMask $ \g -> runInBase $ f $ liftBaseOp_ g
+
 {-# INLINABLE uninterruptibleMask #-}
 
 -- |Generalized version of 'E.uninterruptibleMask_'.
