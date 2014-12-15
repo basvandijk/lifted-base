@@ -4,7 +4,7 @@
 
 cabal.mkDerivation (self: {
   pname = "lifted-base";
-  version = "0.2.3.0";
+  version = "0.2.3.3";
   src = ./.;
   buildDepends = [ monadControl transformersBase ];
   testDepends = [

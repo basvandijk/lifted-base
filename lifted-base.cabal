@@ -1,5 +1,5 @@
 Name:                lifted-base
-Version:             0.2.3.2
+Version:             0.2.3.3
 Synopsis:            lifted IO operations from the base library
 License:             BSD3
 License-file:        LICENSE
@@ -65,7 +65,7 @@ test-suite test-lifted-base
 
   build-depends: lifted-base
                , base                 >= 3     && < 5
-               , transformers         >= 0.4   && < 0.5
+               , transformers         >= 0.3   && < 0.5
                , transformers-base    >= 0.4   && < 0.5
                , monad-control        >= 0.3   && < 1.1
                , HUnit                >= 1.2.2 && < 1.3

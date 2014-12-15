@@ -17,7 +17,11 @@ import Control.Monad.Trans.List
 import Control.Monad.Trans.Maybe
 import Control.Monad.Trans.Reader
 import Control.Monad.Trans.Writer
+
+#if MIN_VERSION_transformers(0,4,0)
 import Control.Monad.Trans.Except
+#endif
+
 import Control.Monad.Trans.State
 import qualified Control.Monad.Trans.RWS as RWS
 
@@ -44,17 +48,23 @@ main = defaultMain
     , testSuite "MaybeT" $ fmap fromJust . runMaybeT
     , testSuite "ReaderT" $ flip runReaderT "reader state"
     , testSuite "WriterT" runWriterT'
+#if MIN_VERSION_transformers(0,4,0)
     , testSuite "ExceptT" runExceptT'
+#endif
     , testSuite "StateT" $ flip evalStateT "state state"
     , testSuite "RWST" $ \m -> runRWST' m "RWS in" "RWS state"
+#if MIN_VERSION_transformers(0,4,0)
     , testCase "ExceptT throwE" case_throwE
+#endif
     , testCase "WriterT tell" case_tell
     ]
   where
     runWriterT' :: Functor m => WriterT [Int] m a -> m a
     runWriterT' = fmap fst . runWriterT
+#if MIN_VERSION_transformers(0,4,0)
     runExceptT' :: Functor m => ExceptT String m () -> m ()
     runExceptT' = fmap (either (const ()) id) . runExceptT
+#endif
     runRWST' :: (Monad m, Functor m) => RWS.RWST r [Int] s m a -> r -> s -> m a
     runRWST' m r s = fmap fst $ RWS.evalRWST m r s
 
@@ -134,6 +144,7 @@ case_onException run = do
     k <- readIORef i
     k @?= 4
 
+#if MIN_VERSION_transformers(0,4,0)
 case_throwE :: Assertion
 case_throwE = do
     i <- newIORef one
@@ -143,6 +154,7 @@ case_throwE = do
         (liftBase $ writeIORef i 3)
     j <- readIORef i
     j @?= 3
+#endif
 
 case_tell :: Assertion
 case_tell = do
