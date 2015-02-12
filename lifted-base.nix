@@ -1,15 +1,15 @@
 { cabal, HUnit, monadControl, testFramework, testFrameworkHunit
-, transformers, transformersBase
+, transformers, transformersBase, transformersCompat
 }:
 
 cabal.mkDerivation (self: {
   pname = "lifted-base";
-  version = "0.2.3.3";
+  version = "HEAD";
   src = ./.;
   buildDepends = [ monadControl transformersBase ];
   testDepends = [
     HUnit monadControl testFramework testFrameworkHunit transformers
-    transformersBase
+    transformersBase transformersCompat
   ];
   meta = {
     homepage = "https://github.com/basvandijk/lifted-base";
