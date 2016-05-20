@@ -90,6 +90,6 @@ benchmark bench-lifted-base
   build-depends: lifted-base
                , base          >= 3   && < 5
                , transformers  >= 0.2 && < 0.5
-               , criterion     >= 0.5 && < 0.9
+               , criterion     >= 1   && < 1.2
                , monad-control >= 0.3 && < 1.1
-               , monad-peel    >= 0.1 && < 0.2
+               , monad-peel    >= 0.1 && < 0.3

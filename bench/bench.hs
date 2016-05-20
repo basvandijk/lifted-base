@@ -45,24 +45,28 @@ main = defaultMain
   , b "bracket_"  benchBracket_ MP.bracket_  MC.bracket_
   , b "catch"     benchCatch    MP.catch     MC.catch
   , b "try"       benchTry      MP.try       MC.try
-  , b "mask"      benchMask     mpMask       MC.mask
+
+  , bgroup "mask"
+    [ bench "monad-peel"    $ whnfIO $ benchMask mpMask
+    , bench "monad-control" $ whnfIO $ benchMask MC.mask
+    ]
 
   , bgroup "liftIOOp"
-    [ bench "monad-peel"    $ exe $ MP.liftIOOp   (E.bracket nop (\_ -> nop))
-                                                  (\_ -> nop)
-    , bench "monad-control" $ exe $ MC.liftBaseOp (E.bracket nop (\_ -> nop))
-                                                  (\_ -> nop)
+    [ bench "monad-peel"    $ whnfIO $ exe $ MP.liftIOOp   (E.bracket nop (\_ -> nop))
+                                                           (\_ -> nop)
+    , bench "monad-control" $ whnfIO $ exe $ MC.liftBaseOp (E.bracket nop (\_ -> nop))
+                                                           (\_ -> nop)
     ]
 
   , bgroup "liftIOOp_"
-    [ bench "monad-peel"    $ exe $ MP.liftIOOp_   (E.bracket_ nop nop) nop
-    , bench "monad-control" $ exe $ MC.liftBaseOp_ (E.bracket_ nop nop) nop
+    [ bench "monad-peel"    $ whnfIO $ exe $ MP.liftIOOp_   (E.bracket_ nop nop) nop
+    , bench "monad-control" $ whnfIO $ exe $ MC.liftBaseOp_ (E.bracket_ nop nop) nop
     ]
   ]
 
 b name bnch peel mndCtrl = bgroup name
-  [ bench "monad-peel"    $ bnch peel
-  , bench "monad-control" $ bnch mndCtrl
+  [ bench "monad-peel"    $ whnfIO $ bnch peel
+  , bench "monad-control" $ whnfIO $ bnch mndCtrl
   ]
 
 --------------------------------------------------------------------------------
