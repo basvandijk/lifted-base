@@ -1,5 +1,5 @@
 Name:                lifted-base
-Version:             0.2.3.11
+Version:             0.2.3.12
 Synopsis:            lifted IO operations from the base library
 License:             BSD3
 License-file:        LICENSE
@@ -47,9 +47,9 @@ Library
     Exposed-modules:
                    Control.Concurrent.SampleVar.Lifted
 
-  Build-depends: base                 >= 3     && < 5
-               , transformers-base    >= 0.4   && < 0.5
-               , monad-control        >= 0.3   && < 1.1
+  Build-depends: base              >= 3 && < 5
+               , transformers-base >= 0.4
+               , monad-control     >= 0.3
 
   Include-dirs: include
   Includes:     inlinable.h
@@ -64,14 +64,14 @@ test-suite test-lifted-base
   hs-source-dirs: test
 
   build-depends: lifted-base
-               , base                 >= 3       && < 5
-               , transformers         >= 0.3     && < 0.6
-               , transformers-base    >= 0.4.4   && < 0.5
-               , transformers-compat  >= 0.3     && < 0.6
-               , monad-control        >= 1.0.0.3 && < 1.1
-               , HUnit                >= 1.2.2   && < 1.5
-               , test-framework       >= 0.2.4   && < 0.9
-               , test-framework-hunit >= 0.2.4   && < 0.4
+               , base                 >= 3 && < 5
+               , transformers         >= 0.3
+               , transformers-base    >= 0.4.4
+               , transformers-compat  >= 0.3
+               , monad-control        >= 1.0.0.3
+               , HUnit                >= 1.2.2
+               , test-framework       >= 0.2.4
+               , test-framework-hunit >= 0.2.4
 
   Include-dirs: include
   Includes:     inlinable.h
@@ -88,8 +88,8 @@ benchmark bench-lifted-base
   ghc-options:    -O2
 
   build-depends: lifted-base
-               , base          >= 3   && < 5
-               , transformers  >= 0.2 && < 0.6
-               , criterion     >= 1   && < 1.4
-               , monad-control >= 0.3 && < 1.1
-               , monad-peel    >= 0.1 && < 0.3
+               , base          >= 3 && < 5
+               , transformers  >= 0.2
+               , criterion     >= 1
+               , monad-control >= 0.3
+               , monad-peel    >= 0.1
