@@ -13,7 +13,6 @@ import Control.Monad.Base (liftBase)
 
 -- from transformers:
 import Control.Monad.Trans.Identity
-import Control.Monad.Trans.List
 import Control.Monad.Trans.Maybe
 import Control.Monad.Trans.Reader
 import Control.Monad.Trans.Writer
@@ -41,7 +40,6 @@ import Test.HUnit hiding (Test)
 main :: IO ()
 main = defaultMain
     [ testSuite "IdentityT" runIdentityT
-    , testSuite "ListT" $ fmap head . runListT
     , testSuite "MaybeT" $ fmap fromJust . runMaybeT
     , testSuite "ReaderT" $ flip runReaderT "reader state"
     , testSuite "WriterT" runWriterT'
